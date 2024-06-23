@@ -171,9 +171,12 @@ class MediaManagerInput extends Repeater
                 ];
                 $counter=0;
                 foreach ($items as $item){
-                    Media::where('uuid', array_keys($item['file'])[0])->update([
-                        'order_column'=> $counter
-                    ]);
+                    $media = Media::where('uuid', array_keys($item['file'])[0])->first();
+                    if($media){
+                        $media->update([
+                            'order_column'=> $counter
+                        ]);
+                    }
                     $counter++;
                 }
 
