@@ -67,16 +67,36 @@ class ListFolders extends ManageRecords
                     }
                 }
                 if(!$arguments['record']['model_type']){
-                    return redirect()->route('filament.'.filament()->getCurrentPanel()->getId().'.resources.media.index', ['folder_id' => $arguments['record']['id']]);
+                    if(filament()->getTenant()){
+                        return redirect()->to(url(filament()->getCurrentPanel()->getId() .'/'. filament()->getTenant()->id . '/media?folder_id='.$arguments['record']['id']));
+                    }
+                    else {
+                        return redirect()->route('filament.'.filament()->getCurrentPanel()->getId().'.resources.media.index', ['folder_id' => $arguments['record']['id']]);
+                    }
                 }
                 if(!$arguments['record']['model_id'] && !$arguments['record']['collection']){
-                    return redirect()->route('filament.'.filament()->getCurrentPanel()->getId().'.resources.folders.index', ['model_type' => $arguments['record']['model_type']]);
+                    if(filament()->getTenant()){
+                        return redirect()->to(url(filament()->getCurrentPanel()->getId() .'/'. filament()->getTenant()->id . '/folders?model_type='.$arguments['record']['model_type']));
+                    }
+                    else {
+                        return redirect()->route('filament.'.filament()->getCurrentPanel()->getId().'.resources.folders.index', ['model_type' => $arguments['record']['model_type']]);
+                    }
                 }
                 else if(!$arguments['record']['model_id']){
-                    return redirect()->route('filament.'.filament()->getCurrentPanel()->getId().'.resources.folders.index', ['model_type' => $arguments['record']['model_type'], 'collection' => $arguments['record']['collection']]);
+                    if(filament()->getTenant()){
+                        return redirect()->to(url(filament()->getCurrentPanel()->getId() .'/'. filament()->getTenant()->id . '/folders?model_type='.$arguments['record']['model_type'].'&collection='.$arguments['record']['collection']));
+                    }
+                    else {
+                        return redirect()->route('filament.'.filament()->getCurrentPanel()->getId().'.resources.folders.index', ['model_type' => $arguments['record']['model_type'], 'collection' => $arguments['record']['collection']]);
+                    }
                 }
                 else {
-                    return redirect()->route('filament.'.filament()->getCurrentPanel()->getId().'.resources.media.index', ['folder_id' => $arguments['record']['id']]);
+                    if(filament()->getTenant()) {
+                        return redirect()->to(url(filament()->getCurrentPanel()->getId() .'/'. filament()->getTenant()->id . '/media?folder_id='.$arguments['record']['id']));
+                    }
+                    else {
+                        return redirect()->route('filament.'.filament()->getCurrentPanel()->getId().'.resources.media.index', ['folder_id' => $arguments['record']['id']]);
+                    }
                 }
             })
             ->view('filament-media-manager::pages.folder-action', ['item' => $item]);

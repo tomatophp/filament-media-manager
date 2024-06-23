@@ -1,5 +1,8 @@
 <?php
 
 return [
-    //You config go here...
+    "model" => [
+        "folder" => \TomatoPHP\FilamentMediaManager\Models\Folder::class,
+        "media" => \TomatoPHP\FilamentMediaManager\Models\Media::class,
+    ]
 ];

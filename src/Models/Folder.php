@@ -34,4 +34,5 @@ class Folder extends Model implements HasMedia
     {
         return $this->morphTo();
     }
+
 }

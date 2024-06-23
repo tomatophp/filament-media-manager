@@ -89,37 +89,37 @@ class MediaManagerInput extends Repeater
                         ->setOrder($counter)
                         ->toMediaCollection($component->name ?? 'default', $component->getDiskName());
 
-                    $homeFolder = Folder::where('model_type', get_class($record))
+                    $homeFolder = config('filament-media-manager.model.folder')::where('model_type', get_class($record))
                         ->where('model_id', null)
                         ->where('collection', null)
                         ->first();
                     if(!$homeFolder){
-                        $homeFolder = Folder::create([
+                        $homeFolder = config('filament-media-manager.model.folder')::create([
                             'model_type' =>  get_class($record),
                             'model_id' => null,
                             'name' => Str::of(get_class($record))->afterLast('\\')->title()->toString()
                         ]);
                     }
 
-                    $collectionFolder = Folder::where('model_type', get_class($record))
+                    $collectionFolder = config('filament-media-manager.model.folder')::where('model_type', get_class($record))
                         ->where('model_id', null)
                         ->where('collection', $component->name)
                         ->first();
                     if(!$collectionFolder){
-                        $collectionFolder = Folder::create([
+                        $collectionFolder = config('filament-media-manager.model.folder')::create([
                             'collection' => $component->name,
                             'model_type' =>  get_class($record),
                             'name' => Str::of($component->name)->title()->toString()
                         ]);
                     }
 
-                    $folder = Folder::where('collection', $component->name)
+                    $folder = config('filament-media-manager.model.folder')::where('collection', $component->name)
                         ->where('model_type', get_class($record))
                         ->where('model_id', $record->id)
                         ->first();
 
                     if(!$folder){
-                        $folder = Folder::create([
+                        $folder = config('filament-media-manager.model.folder')::create([
                             'collection' => $component->name,
                             'model_type' =>  get_class($record),
                             'model_id' => $record->id,

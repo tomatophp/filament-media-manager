@@ -59,7 +59,7 @@ class ListMedia extends ManageRecords
     protected function getHeaderActions(): array
     {
         $folder_id = $this->folder_id;
-        $form = \TomatoPHP\FilamentMediaManager\Models\Folder::find($folder_id)?->toArray();
+        $form = config('filament-media-manager.model.folder')::find($folder_id)?->toArray();
         return [
             Actions\Action::make('create_media')
                 ->mountUsing(function () use ($folder_id){
@@ -114,7 +114,7 @@ class ListMedia extends ManageRecords
                 ->icon('heroicon-o-trash')
                 ->color('danger')
                 ->action(function () use ($folder_id){
-                    $folder = \TomatoPHP\FilamentMediaManager\Models\Folder::find($folder_id);
+                    $folder = config('filament-media-manager.model.folder')::find($folder_id);
                     $folder->delete();
                     session()->forget('folder_id');
 
@@ -172,7 +172,7 @@ class ListMedia extends ManageRecords
                 })
                 ->fillForm($form)
                 ->action(function (array $data) use ($folder_id){
-                    $folder = \TomatoPHP\FilamentMediaManager\Models\Folder::find($folder_id);
+                    $folder = config('filament-media-manager.model.folder')::find($folder_id);
                     $folder->update($data);
 
                     Notification::make()->title(trans('filament-media-manager::messages.media.notificaitons.edit-folder'))->send();
