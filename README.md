@@ -21,11 +21,56 @@ after install your package please run this command
 php artisan filament-media-manager:install
 ```
 
-finally register the plugin on `/app/Providers/Filament/AdminPanelProvider.php`
+finally register the plugin on `/app/Providers/Filament/AdminPanelProvider.php`, if you like to use GUI and Folder Browser.
 
 ```php
 ->plugin(\TomatoPHP\FilamentMediaManager\FilamentMediaManagerPlugin::make())
 ```
+
+## Features
+
+- Manage your media files using spatie media library
+- Create folders and subfolders
+- Set password for folders
+- Upload Files with Custom Fields using `->schema()`
+- Auto Create Folders for Model/Collection/Record
+- RTL/Mutli Language Support
+
+## Screenshots
+
+![Folders](https://raw.githubusercontent.com/tomatophp/filament-media-manager/master/arts/folders.png)
+![Folder Password](https://raw.githubusercontent.com/tomatophp/filament-media-manager/master/arts/folder-password.png)
+![Media](https://raw.githubusercontent.com/tomatophp/filament-media-manager/master/arts/media.png)
+![Media Inputs](https://raw.githubusercontent.com/tomatophp/filament-media-manager/master/arts/media-input.png)
+![Media Component](https://raw.githubusercontent.com/tomatophp/filament-media-manager/master/arts/media-component.png)
+
+
+## Usage
+
+you can use the media manager by add this code to your filament component
+
+```php
+use TomatoPHP\FilamentMediaManager\Form\MediaManagerInput;
+
+public function form(Form $form)
+{
+    return $form->schema([
+        MediaManagerInput::make('images')
+            ->disk('public')
+            ->schema([
+                Forms\Components\TextInput::make('title')
+                    ->required()
+                    ->maxLength(255),
+                Forms\Components\TextInput::make('description')
+                    ->required()
+                    ->maxLength(255),
+            ]),
+    ]);
+}
+
+```
+
+please note that the `name ` of the component will be the same name of the collection.
 
 ## Publish Assets
 

@@ -37,11 +37,9 @@ class FilamentMediaManagerInstall extends Command
     public function handle()
     {
         $this->info('Publish Vendor Assets');
-        $this->callSilent('optimize:clear');
-        $this->yarnCommand(['install']);
-        $this->yarnCommand(['build']);
+        $this->artisanCommand(['vendor:publish --tag="medialibrary-migrations"']);
         $this->artisanCommand(["migrate"]);
         $this->artisanCommand(["optimize:clear"]);
-        $this->info('filamentMediaManager installed successfully.');
+        $this->info('Filament Media Manager installed successfully.');
     }
 }
