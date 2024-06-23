@@ -188,7 +188,10 @@ class MediaManagerInput extends Repeater
                 ->requiresConfirmation()
                 ->action(function (array $arguments, Repeater $component){
                 $items = $component->getState();
-                Media::where('uuid', $items[$arguments['item']])->delete();
+                $media = Media::where('uuid', $items[$arguments['item']])->first();
+                if($media){
+                    $media->delete();
+                }
 
                 unset($items[$arguments['item']]);
 
