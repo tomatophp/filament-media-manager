@@ -49,7 +49,7 @@ class ListFolders extends ManageRecords
                     ];
                 }
                 else {
-                    return [];
+                    return null;
                 }
             })
             ->action(function (array $arguments, array $data){

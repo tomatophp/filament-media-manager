@@ -38,6 +38,7 @@ class MediaManagerInput extends Repeater
     protected array $form = [];
 
     protected string | Closure | null $diskName = null;
+    protected string | Closure | null $folderTitleFieldName = null;
 
     protected function setUp(): void
     {
@@ -123,7 +124,7 @@ class MediaManagerInput extends Repeater
                             'collection' => $component->name,
                             'model_type' =>  get_class($record),
                             'model_id' => $record->id,
-                            'name' => Str::of( get_class($record))->afterLast('\\')->title()->toString() . '['.$record->id.']',
+                            'name' => $component->folderTitleFieldName ? $record->{$component->folderTitleFieldName} : Str::of( get_class($record))->afterLast('\\')->title()->toString() . '['.$record->id.']',
                         ]);
                     }
 
@@ -285,5 +286,13 @@ class MediaManagerInput extends Repeater
 
         return $this;
     }
+
+    public function folderTitleFieldName(string | Closure | null $folderTitleFieldName): static
+    {
+        $this->folderTitleFieldName = $folderTitleFieldName;
+
+        return $this;
+    }
+
 
 }
