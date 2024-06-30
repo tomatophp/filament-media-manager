@@ -13,14 +13,20 @@
                         @elseif(str($item->mime_type)->contains('audio'))
                             <x-icon name="heroicon-o-musical-note" class="w-32 h-32" />
                         @else
-                            @php $loadTypes = \TomatoPHP\FilamentMediaManager\Facade\FilamentMediaManager::getTypes() @endphp
-                            @foreach($loadTypes as $type)
-                                @if(str($item->file_name)->contains($type->exstantion))
-                                    <x-icon :name="$type->icon" class="w-32 h-32" />
-                                @else
-                                    <x-icon name="heroicon-o-document" class="w-32 h-32" />
-                                @endif
-                            @endforeach
+                            @php
+                                $hasPreview = false;
+                                $loadTypes = \TomatoPHP\FilamentMediaManager\Facade\FilamentMediaManager::getTypes();
+                                foreach ($loadTypes as $type) {
+                                    if(str($item->file_name)->contains($type->exstantion)){
+                                        $hasPreview = $type->preview;
+                                    }
+                                }
+                            @endphp
+                            @if($hasPreview)
+                                <x-icon :name="$type->icon" class="w-32 h-32" />
+                            @else
+                                <x-icon name="heroicon-o-document" class="w-32 h-32" />
+                            @endif
                         @endif
                     </div>
                     <div>
@@ -85,22 +91,23 @@
                             </video>
                         </a>
                     @else
-                        @php $loadTypes = \TomatoPHP\FilamentMediaManager\Facade\FilamentMediaManager::getTypes() @endphp
-                        @foreach($loadTypes as $type)
-                            @if(str($item->file_name)->contains($type->exstantion))
-                                @if($type->preview)
-                                    @include($type->preview, ['url' => $item->getUrl()])
-                                @else
-                                    <a href="{{ $item->getUrl() }}" target="_blank" class="flex flex-col items-center justify-center  p-4 h-full border dark:border-gray-700 rounded-lg">
-                                        <x-icon :name="$type->icon" class="w-32 h-32" />
-                                    </a>
-                                @endif
-                            @else
-                                <a href="{{ $item->getUrl() }}" target="_blank" class="flex flex-col items-center justify-center  p-4 h-full border dark:border-gray-700 rounded-lg">
-                                    <x-icon name="heroicon-o-document" class="w-32 h-32" />
-                                </a>
-                            @endif
-                        @endforeach
+                        @php
+                            $hasPreview = false;
+                            $loadTypes = \TomatoPHP\FilamentMediaManager\Facade\FilamentMediaManager::getTypes();
+                            foreach ($loadTypes as $type) {
+                                if(str($item->file_name)->contains($type->exstantion)){
+                                    $hasPreview = $type->preview;
+                                }
+                            }
+                        @endphp
+                        @if($hasPreview)
+                            @include($hasPreview, ['media' => $item])
+
+                        @else
+                            <a href="{{ $item->getUrl() }}" target="_blank" class="flex flex-col items-center justify-center  p-4 h-full border dark:border-gray-700 rounded-lg">
+                                <x-icon :name="$type->icon" class="w-32 h-32" />
+                            </a>
+                        @endif
                     @endif
                     <div class="flex flex-col gap-4 my-4">
                         @if($item->model)

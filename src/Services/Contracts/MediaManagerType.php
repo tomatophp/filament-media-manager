@@ -7,8 +7,8 @@ class MediaManagerType
     public ?string $exstantion = null;
     public ?string $icon = null;
     public ?string $preview = null;
-    public ?string $js = null;
-    public ?string $css = null;
+    public ?array $js = null;
+    public ?array $css = null;
 
 
     public static function make(?string $exstantion=null): static
@@ -34,15 +34,25 @@ class MediaManagerType
         return $this;
     }
 
-    public function js(?string $js=null): static
+    public function js(string|array|null $js=null): static
     {
-        $this->js = $js;
+        if(is_array($js)){
+            $this->js = $js;
+        }
+        else {
+            $this->js[] = $js;
+        }
         return $this;
     }
 
-    public function css(?string $css=null): static
+    public function css(string|array|null $css=null): static
     {
-        $this->css = $css;
+        if(is_array($css)){
+            $this->css = $css;
+        }
+        else {
+            $this->css[] = $css;
+        }
         return $this;
     }
 }

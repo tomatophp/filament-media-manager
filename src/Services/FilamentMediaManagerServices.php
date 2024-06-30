@@ -19,14 +19,18 @@ class FilamentMediaManagerServices
             }
         } else {
             if($type->js){
-                FilamentAsset::register([
-                    Js::make($type->exstantion.'_js', $type->js),
-                ]);
+                foreach ($type->js as $key=>$jsItem){
+                    FilamentAsset::register([
+                        Js::make($type->exstantion.'_js_'.$key, $jsItem),
+                    ]);
+                }
             }
             if($type->css){
-                FilamentAsset::register([
-                    Css::make($type->exstantion.'_css', $type->css),
-                ]);
+                foreach ($type->css as $key=>$cssItem){
+                    FilamentAsset::register([
+                        Css::make($type->exstantion.'_css_'.$key, $cssItem),
+                    ]);
+                }
             }
 
             $this->types[] = $type;
