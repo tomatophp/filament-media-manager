@@ -3,6 +3,7 @@
 namespace TomatoPHP\FilamentMediaManager;
 
 use Illuminate\Support\ServiceProvider;
+use TomatoPHP\FilamentMediaManager\Services\FilamentMediaManagerServices;
 
 
 class FilamentMediaManagerServiceProvider extends ServiceProvider
@@ -48,6 +49,9 @@ class FilamentMediaManagerServiceProvider extends ServiceProvider
         //Register Routes
         $this->loadRoutesFrom(__DIR__.'/../routes/web.php');
 
+        $this->app->bind('filament-media-manager', function () {
+            return new FilamentMediaManagerServices();
+        });
     }
 
     public function boot(): void

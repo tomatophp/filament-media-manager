@@ -13,7 +13,14 @@
                         @elseif(str($item->mime_type)->contains('audio'))
                             <x-icon name="heroicon-o-musical-note" class="w-32 h-32" />
                         @else
-                            <x-icon name="heroicon-o-document" class="w-32 h-32" />
+                            @php $loadTypes = \TomatoPHP\FilamentMediaManager\Facade\FilamentMediaManager::getTypes() @endphp
+                            @foreach($loadTypes as $type)
+                                @if(str($item->file_name)->contains($type->exstantion))
+                                    <x-icon :name="$type->icon" class="w-32 h-32" />
+                                @else
+                                    <x-icon name="heroicon-o-document" class="w-32 h-32" />
+                                @endif
+                            @endforeach
                         @endif
                     </div>
                     <div>
@@ -70,7 +77,18 @@
                                 <source src="{{ $item->getUrl() }}" type="{{ $item->mime_type }}">
                             </video>
                         @else
-                            <x-icon name="heroicon-o-document" class="w-32 h-32" />
+                            @php $loadTypes = \TomatoPHP\FilamentMediaManager\Facade\FilamentMediaManager::getTypes() @endphp
+                            @foreach($loadTypes as $type)
+                                @if(str($item->file_name)->contains($type->exstantion))
+                                    @if($type->preview)
+                                        @include($type->preview, ['url' => $item->getUrl()])
+                                    @else
+                                        <x-icon :name="$type->icon" class="w-32 h-32" />
+                                    @endif
+                                @else
+                                    <x-icon name="heroicon-o-document" class="w-32 h-32" />
+                                @endif
+                            @endforeach
                         @endif
                     </a>
                     <div class="flex flex-col gap-4 my-4">
