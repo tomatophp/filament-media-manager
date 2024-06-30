@@ -65,32 +65,43 @@
 
             <div>
                 <div class="flex flex-col justify-start w-full h-full">
-                    <a href="{{ $item->getUrl() }}" target="_blank" class="flex flex-col items-center justify-center  p-4 h-full border dark:border-gray-700 rounded-lg">
-                        @if(str($item->mime_type)->contains('image'))
+
+                    @if(str($item->mime_type)->contains('image'))
+                        <a href="{{ $item->getUrl() }}" target="_blank" class="flex flex-col items-center justify-center  p-4 h-full border dark:border-gray-700 rounded-lg">
                             <img src="{{ $item->getUrl() }}" />
-                        @elseif(str($item->mime_type)->contains('video'))
+                        </a>
+
+                    @elseif(str($item->mime_type)->contains('video'))
+                        <a href="{{ $item->getUrl() }}" target="_blank" class="flex flex-col items-center justify-center  p-4 h-full border dark:border-gray-700 rounded-lg">
                             <video class="w-full h-full" controls>
                                 <source src="{{ $item->getUrl() }}" type="{{ $item->mime_type }}">
                             </video>
-                        @elseif(str($item->mime_type)->contains('audio'))
+                        </a>
+
+                    @elseif(str($item->mime_type)->contains('audio'))
+                        <a href="{{ $item->getUrl() }}" target="_blank" class="flex flex-col items-center justify-center  p-4 h-full border dark:border-gray-700 rounded-lg">
                             <video class="w-full h-full" controls>
                                 <source src="{{ $item->getUrl() }}" type="{{ $item->mime_type }}">
                             </video>
-                        @else
-                            @php $loadTypes = \TomatoPHP\FilamentMediaManager\Facade\FilamentMediaManager::getTypes() @endphp
-                            @foreach($loadTypes as $type)
-                                @if(str($item->file_name)->contains($type->exstantion))
-                                    @if($type->preview)
-                                        @include($type->preview, ['url' => $item->getUrl()])
-                                    @else
-                                        <x-icon :name="$type->icon" class="w-32 h-32" />
-                                    @endif
+                        </a>
+                    @else
+                        @php $loadTypes = \TomatoPHP\FilamentMediaManager\Facade\FilamentMediaManager::getTypes() @endphp
+                        @foreach($loadTypes as $type)
+                            @if(str($item->file_name)->contains($type->exstantion))
+                                @if($type->preview)
+                                    @include($type->preview, ['url' => $item->getUrl()])
                                 @else
-                                    <x-icon name="heroicon-o-document" class="w-32 h-32" />
+                                    <a href="{{ $item->getUrl() }}" target="_blank" class="flex flex-col items-center justify-center  p-4 h-full border dark:border-gray-700 rounded-lg">
+                                        <x-icon :name="$type->icon" class="w-32 h-32" />
+                                    </a>
                                 @endif
-                            @endforeach
-                        @endif
-                    </a>
+                            @else
+                                <a href="{{ $item->getUrl() }}" target="_blank" class="flex flex-col items-center justify-center  p-4 h-full border dark:border-gray-700 rounded-lg">
+                                    <x-icon name="heroicon-o-document" class="w-32 h-32" />
+                                </a>
+                            @endif
+                        @endforeach
+                    @endif
                     <div class="flex flex-col gap-4 my-4">
                         @if($item->model)
                         <div>
