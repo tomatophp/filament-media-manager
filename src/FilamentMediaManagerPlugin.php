@@ -12,9 +12,17 @@ use TomatoPHP\FilamentMediaManager\Resources\MediaResource;
 
 class FilamentMediaManagerPlugin implements Plugin
 {
+    public ?bool $allowSubFolders = false;
+
     public function getId(): string
     {
         return 'filament-media-manager';
+    }
+
+    public function allowSubFolders(bool $condation = true): static
+    {
+        $this->allowSubFolders = $condation;
+        return $this;
     }
 
     public function register(Panel $panel): void

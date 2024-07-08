@@ -62,6 +62,7 @@ class MediaResource extends Resource
                     }
                 }
             })
+            ->emptyState(fn()=>view('filament-media-manager::pages.media'))
             ->content(function () {
                 return view('filament-media-manager::pages.media');
             })

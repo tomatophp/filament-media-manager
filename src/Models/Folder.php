@@ -11,6 +11,7 @@ class Folder extends Model implements HasMedia
     use InteractsWithMedia;
 
     protected $fillable = [
+        'parent_id',
         'model_type',
         'model_id',
         'name',
@@ -34,5 +35,4 @@ class Folder extends Model implements HasMedia
     {
         return $this->morphTo();
     }
-
 }

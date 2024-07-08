@@ -1,6 +1,9 @@
 <?php
 
 return [
+    'empty' => [
+        'title' => "No Media or Folders Found",
+    ],
     'folders' => [
         'title' => 'Media Manager',
         'single' => 'Folder',
@@ -25,6 +28,9 @@ return [
             'collection_name' => 'Collection Name',
         ],
         'actions' => [
+            'sub_folder'=> [
+              'label' => "Create Sub Folder"
+            ],
             'create' => [
                 'label' => 'Add Media',
                 'form' => [

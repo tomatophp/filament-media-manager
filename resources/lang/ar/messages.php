@@ -1,6 +1,9 @@
 <?php
 
 return [
+    'empty' => [
+        'title' => "لا يوجد وسائط أو مجلدات",
+    ],
     'folders' => [
         'title' => 'مدير الوسائط',
         'single' => 'مجلد',
@@ -25,6 +28,9 @@ return [
             'collection_name' => 'اسم المجموعة',
         ],
         'actions' => [
+            'sub_folder'=> [
+                'label' => "إنشاء مجلد فرعي"
+            ],
             'create' => [
                 'label' => 'إضافة وسائط',
                 'form' => [

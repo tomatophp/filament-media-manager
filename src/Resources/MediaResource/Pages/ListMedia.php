@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 use TomatoPHP\FilamentIcons\Components\IconPicker;
 use TomatoPHP\FilamentMediaManager\Models\Folder;
+use TomatoPHP\FilamentMediaManager\Models\Media;
 use TomatoPHP\FilamentMediaManager\Resources\MediaResource;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
@@ -61,6 +62,71 @@ class ListMedia extends ManageRecords
         $folder_id = $this->folder_id;
         $form = config('filament-media-manager.model.folder')::find($folder_id)?->toArray();
         return [
+            Actions\Action::make('create_sub_folder')
+                ->hidden(fn()=> !filament('filament-media-manager')->allowSubFolders)
+                ->mountUsing(function () use ($folder_id){
+                    session()->put('folder_id', $folder_id);
+                })
+                ->color('info')
+                ->label(trans('filament-media-manager::messages.media.actions.sub_folder.label'))
+                ->icon('heroicon-o-folder-minus')
+                ->form([
+                    Forms\Components\TextInput::make('name')
+                        ->label(trans('filament-media-manager::messages.folders.columns.name'))
+                        ->columnSpanFull()
+                        ->lazy()
+                        ->afterStateUpdated(function (Forms\Set $set, Forms\Get $get) {
+                            $set('collection', Str::slug($get('name')));
+                        })
+                        ->required()
+                        ->maxLength(255),
+                    Forms\Components\TextInput::make('collection')
+                        ->label(trans('filament-media-manager::messages.folders.columns.collection'))
+                        ->columnSpanFull()
+                        ->unique(Folder::class)
+                        ->required()
+                        ->maxLength(255),
+                    Forms\Components\Textarea::make('description')
+                        ->label(trans('filament-media-manager::messages.folders.columns.description'))
+                        ->columnSpanFull()
+                        ->maxLength(255),
+                    IconPicker::make('icon')
+                        ->label(trans('filament-media-manager::messages.folders.columns.icon')),
+                    Forms\Components\ColorPicker::make('color')
+                        ->label(trans('filament-media-manager::messages.folders.columns.color')),
+                    Forms\Components\Toggle::make('is_protected')
+                        ->label(trans('filament-media-manager::messages.folders.columns.is_protected'))
+                        ->live()
+                        ->columnSpanFull(),
+                    Forms\Components\TextInput::make('password')
+                        ->label(trans('filament-media-manager::messages.folders.columns.password'))
+                        ->hidden(fn(Forms\Get $get) => !$get('is_protected'))
+                        ->password()
+                        ->revealable()
+                        ->required()
+                        ->maxLength(255),
+                    Forms\Components\TextInput::make('password_confirmation')
+                        ->label(trans('filament-media-manager::messages.folders.columns.password_confirmation'))
+                        ->hidden(fn(Forms\Get $get) => !$get('is_protected'))
+                        ->password()
+                        ->required()
+                        ->revealable()
+                        ->maxLength(255)
+                ])
+                ->action(function (array $data) use ($folder_id) {
+                    $folder = Folder::find($folder_id);
+                    if($folder){
+                        $data['model_id'] = $folder_id;
+                        $data['model_type'] = Folder::class;
+                        Folder::query()->create($data);
+                    }
+
+                    Notification::make()
+                        ->title('Folder Created')
+                        ->body('Folder Created Successfully')
+                        ->success()
+                        ->send();
+                }),
             Actions\Action::make('create_media')
                 ->mountUsing(function () use ($folder_id){
                     session()->put('folder_id', $folder_id);
@@ -178,5 +244,99 @@ class ListMedia extends ManageRecords
                     Notification::make()->title(trans('filament-media-manager::messages.media.notificaitons.edit-folder'))->send();
                 })
         ];
+    }
+
+    public function folderAction(?Folder $item=null){
+        return Actions\Action::make('folderAction')
+            ->requiresConfirmation(function (array $arguments){
+                if($arguments['record']['is_protected']){
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            })
+            ->form(function (array $arguments){
+                if($arguments['record']['is_protected']){
+                    return [
+                        TextInput::make('password')
+                            ->password()
+                            ->revealable()
+                            ->required()
+                            ->maxLength(255),
+                    ];
+                }
+                else {
+                    return null;
+                }
+            })
+            ->action(function (array $arguments, array $data){
+                if($arguments['record']['is_protected']){
+                    if($arguments['record']['password'] != $data['password']){
+                        Notification::make()
+                            ->title('Password is incorrect')
+                            ->danger()
+                            ->send();
+
+                        return ;
+                    }
+                    else {
+                        session()->put('folder_password', $data['password']);
+                    }
+                }
+                if(!$arguments['record']['model_type']){
+                    if(filament()->getTenant()){
+                        return redirect()->to(url(filament()->getCurrentPanel()->getId() .'/'. filament()->getTenant()->id . '/media?folder_id='.$arguments['record']['id']));
+                    }
+                    else {
+                        return redirect()->route('filament.'.filament()->getCurrentPanel()->getId().'.resources.media.index', ['folder_id' => $arguments['record']['id']]);
+                    }
+                }
+                if(!$arguments['record']['model_id'] && !$arguments['record']['collection']){
+                    if(filament()->getTenant()){
+                        return redirect()->to(url(filament()->getCurrentPanel()->getId() .'/'. filament()->getTenant()->id . '/folders?model_type='.$arguments['record']['model_type']));
+                    }
+                    else {
+                        return redirect()->route('filament.'.filament()->getCurrentPanel()->getId().'.resources.folders.index', ['model_type' => $arguments['record']['model_type']]);
+                    }
+                }
+                else if(!$arguments['record']['model_id']){
+                    if(filament()->getTenant()){
+                        return redirect()->to(url(filament()->getCurrentPanel()->getId() .'/'. filament()->getTenant()->id . '/folders?model_type='.$arguments['record']['model_type'].'&collection='.$arguments['record']['collection']));
+                    }
+                    else {
+                        return redirect()->route('filament.'.filament()->getCurrentPanel()->getId().'.resources.folders.index', ['model_type' => $arguments['record']['model_type'], 'collection' => $arguments['record']['collection']]);
+                    }
+                }
+                else {
+                    if(filament()->getTenant()) {
+                        return redirect()->to(url(filament()->getCurrentPanel()->getId() .'/'. filament()->getTenant()->id . '/media?folder_id='.$arguments['record']['id']));
+                    }
+                    else {
+                        return redirect()->route('filament.'.filament()->getCurrentPanel()->getId().'.resources.media.index', ['folder_id' => $arguments['record']['id']]);
+                    }
+                }
+            })
+            ->view('filament-media-manager::pages.folder-action', ['item' => $item]);
+    }
+
+
+    public function deleteMedia()
+    {
+        return Actions\Action::make('deleteMedia')
+            ->label('Delete Media')
+            ->icon('heroicon-s-trash')
+            ->color('danger')
+            ->requiresConfirmation()
+            ->action(function (array $arguments) {
+                $media = Media::find($arguments['record']['id']);
+                $media->delete();
+
+                Notification::make()
+                    ->title('Folder deleted successfully')
+                    ->success()
+                    ->send();
+            });
+
     }
 }
