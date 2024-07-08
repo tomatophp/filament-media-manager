@@ -39,6 +39,7 @@
         "php": "^8.1|^8.2",
         "tomatophp/console-helpers": "^1.1",
         "spatie/laravel-medialibrary": "^10.0|^11.0",
+        "tomatophp/filament-icons": "^v1.1",
         "filament/spatie-laravel-media-library-plugin": "^v3.0.0",
         "filament/filament": "^v3.0.0"
     }
