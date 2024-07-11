@@ -51,5 +51,14 @@ return [
             'delete-folder' => 'Folder deleted successfully',
             'edit-folder' => 'Folder edited successfully',
         ],
+        'meta' => [
+            'model' => 'Model',
+            'file-name' => 'File Name',
+            'type' => 'Type',
+            'size' => 'Size',
+            'disk' => 'Disk',
+            'url' => 'URL',
+            'delete-media' => 'Delete Media',
+        ],
     ],
 ];

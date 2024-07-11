@@ -135,7 +135,7 @@
                             @if($item->model)
                             <div>
                                 <div>
-                                    <h1 class="font-bold">Model</h1>
+                                    <h1 class="font-bold">{{ trans('filament-media-manager::messages.media.meta.model') }}</h1>
                                 </div>
                                 <div class="flex justify-start">
                                     <p class="text-sm">
@@ -146,7 +146,7 @@
                             @endif
                             <div>
                                 <div>
-                                    <h1 class="font-bold">File Name</h1>
+                                    <h1 class="font-bold">{{ trans('filament-media-manager::messages.media.meta.file-name') }}</h1>
                                 </div>
                                 <div class="flex justify-start">
                                     <p class="text-sm">
@@ -156,7 +156,7 @@
                             </div>
                             <div>
                                 <div>
-                                    <h1 class="font-bold">Type</h1>
+                                    <h1 class="font-bold">{{ trans('filament-media-manager::messages.media.meta.type') }}</h1>
                                 </div>
                                 <div class="flex justify-start">
                                     <p class="text-sm">
@@ -166,17 +166,17 @@
                             </div>
                             <div>
                                 <div>
-                                    <h1 class="font-bold">Size</h1>
+                                    <h1 class="font-bold">{{ trans('filament-media-manager::messages.media.meta.size') }}</h1>
                                 </div>
                                 <div class="flex justify-start">
                                     <p class="text-sm">
-                                        {{ ($item->size/1000) .'KB' }}
+                                        {{ $item->humanReadableSize }}
                                     </p>
                                 </div>
                             </div>
                             <div>
                                 <div>
-                                    <h1 class="font-bold">Disk</h1>
+                                    <h1 class="font-bold">{{ trans('filament-media-manager::messages.media.meta.disk') }}</h1>
                                 </div>
                                 <div class="flex justify-start">
                                     <p class="text-sm">
