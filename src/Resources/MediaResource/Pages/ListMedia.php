@@ -324,7 +324,7 @@ class ListMedia extends ManageRecords
     public function deleteMedia()
     {
         return Actions\Action::make('deleteMedia')
-            ->label('Delete Media')
+            ->label(trans('filament-media-manager::messages.media.meta.delete-media'))
             ->icon('heroicon-s-trash')
             ->color('danger')
             ->requiresConfirmation()
@@ -333,7 +333,7 @@ class ListMedia extends ManageRecords
                 $media->delete();
 
                 Notification::make()
-                    ->title('Folder deleted successfully')
+                    ->title(trans('filament-media-manager::messages.media.notificaitons.delete-folder'))
                     ->success()
                     ->send();
             });
