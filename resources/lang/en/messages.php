@@ -26,6 +26,8 @@ return [
             'image' => 'Image',
             'model' => 'Model',
             'collection_name' => 'Collection Name',
+            'size' => 'Size',
+            'order_column' => 'Order Column',
         ],
         'actions' => [
             'sub_folder'=> [

@@ -50,7 +50,7 @@
                         <div>
                             <div class="flex flex-col justify-between border-t dark:border-gray-700 p-4">
                                 <div>
-                                    <h1 class="font-bold">{{ $item->hasCustomProperty('title') ? $item->getCustomProperty('title') : $item->name }}</h1>
+                                    <h1 class="font-bold break-words">{{ $item->hasCustomProperty('title') ? $item->getCustomProperty('title') : $item->name }}</h1>
                                 </div>
 
                                 @if($item->hasCustomProperty('description'))

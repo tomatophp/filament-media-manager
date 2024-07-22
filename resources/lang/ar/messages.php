@@ -26,6 +26,8 @@ return [
             'image' => 'الصورة',
             'model' => 'النموذج',
             'collection_name' => 'اسم المجموعة',
+            'size' => 'الججم',
+            'order_column' => 'عمود الترتيب',
         ],
         'actions' => [
             'sub_folder'=> [
