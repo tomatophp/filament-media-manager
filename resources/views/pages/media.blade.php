@@ -1,4 +1,5 @@
 @php
+    $currentFolder = \TomatoPHP\FilamentMediaManager\Models\Folder::find($this->folder_id);
     if(filament('filament-media-manager')->allowSubFolders){
         $folders = \TomatoPHP\FilamentMediaManager\Models\Folder::query()
             ->where('model_type', \TomatoPHP\FilamentMediaManager\Models\Folder::class)
@@ -50,10 +51,10 @@
                         <div>
                             <div class="flex flex-col justify-between border-t dark:border-gray-700 p-4">
                                 <div>
-                                    <h1 class="font-bold break-words">{{ $item->hasCustomProperty('title') ? $item->getCustomProperty('title') : $item->name }}</h1>
+                                    <h1 class="font-bold break-words">{{ $item->hasCustomProperty('title') ? (!empty($item->getCustomProperty('title')) ? $item->getCustomProperty('title') : $item->name) : $item->name }}</h1>
                                 </div>
 
-                                @if($item->hasCustomProperty('description'))
+                                @if($item->hasCustomProperty('description') && !empty($item->getCustomProperty('description')))
                                     <div>
                                         <div>
                                             <h1 class="font-bold">Description</h1>
@@ -186,25 +187,36 @@
                             </div>
                             @if($item->custom_properties)
                                 @foreach($item->custom_properties as $key=>$value)
-                                    <div>
+                                    @if($value)
                                         <div>
-                                            <h1 class="font-bold">{{str($key)->title()}}</h1>
+                                            <div>
+                                                <h1 class="font-bold">{{str($key)->title()}}</h1>
+                                            </div>
+                                            <div class="flex justify-start">
+                                                <p class="text-sm">
+                                                    {{ $value }}
+                                                </p>
+                                            </div>
                                         </div>
-                                        <div class="flex justify-start">
-                                            <p class="text-sm">
-                                                {{ $value }}
-                                            </p>
-                                        </div>
-                                    </div>
+                                    @endif
                                 @endforeach
                             @endif
                         </div>
                     </div>
                 </div>
 
-                <x-slot name="footer">
-                    {{ ($this->deleteMedia)(['record' => $item]) }}
-                </x-slot>
+                    @if(filament('filament-media-manager')->allowUserAccess && (!empty($currentFolder->user_id)))
+                        @if($currentFolder->user_id === auth()->user()->id && $currentFolder->user_type === get_class(auth()->user()))
+                            <x-slot name="footer">
+                                {{ ($this->deleteMedia)(['record' => $item]) }}
+                            </x-slot>
+                        @endif
+                    @else
+                        <x-slot name="footer">
+                            {{ ($this->deleteMedia)(['record' => $item]) }}
+                        </x-slot>
+                    @endif
+
             </x-filament::modal>
             @endif
         @endforeach

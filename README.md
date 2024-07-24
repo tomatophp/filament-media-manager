@@ -175,6 +175,40 @@ you can allow create and manage subfolders on your media manager on `/app/Provid
 )
 ```
 
+## Allow User Access
+
+now you can allow user to access selected folder and restract user to access each other folders if the folder is not public on `/app/Providers/Filament/AdminPanelProvider.php`
+
+```php
+->plugin(
+    \TomatoPHP\FilamentMediaManager\FilamentMediaManagerPlugin::make()
+        ->allowUserAccess()
+)
+```
+
+**NOTE** don't forget to migrate after update the plugin
+
+## Folders API
+
+now you can access your media and folders using API you have 2 endpoints
+
+- `/api/folders` to get all folders
+- `/api/folders/{id}` to get folder by id with sub folders and media files
+
+to allow this feature you need to publish the config file by use this command
+
+```bash
+php artisan vendor:publish --tag="filament-media-manager-config"
+```
+
+then you can set `api.active` to `true` on the config file
+
+```php
+'api' => [
+    "active" => true,
+],
+```
+
 ## Publish Assets
 
 you can publish config file by use this command

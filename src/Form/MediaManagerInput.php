@@ -95,11 +95,16 @@ class MediaManagerInput extends Repeater
                         ->where('collection', null)
                         ->first();
                     if(!$homeFolder){
-                        $homeFolder = config('filament-media-manager.model.folder')::create([
+                        $data = [
                             'model_type' =>  get_class($record),
                             'model_id' => null,
                             'name' => Str::of(get_class($record))->afterLast('\\')->title()->toString()
-                        ]);
+                        ];
+                        if(filament('filament-media-manager')->allowUserAccess){
+                            $data['user_id'] = auth()->user()->id;
+                            $data['user_type'] =  get_class(auth()->user());
+                        }
+                        $homeFolder = config('filament-media-manager.model.folder')::create($data);
                     }
 
                     $collectionFolder = config('filament-media-manager.model.folder')::where('model_type', get_class($record))
@@ -107,11 +112,16 @@ class MediaManagerInput extends Repeater
                         ->where('collection', $component->name)
                         ->first();
                     if(!$collectionFolder){
-                        $collectionFolder = config('filament-media-manager.model.folder')::create([
+                        $data = [
                             'collection' => $component->name,
                             'model_type' =>  get_class($record),
                             'name' => Str::of($component->name)->title()->toString()
-                        ]);
+                        ];
+                        if(filament('filament-media-manager')->allowUserAccess){
+                            $data['user_id'] = auth()->user()->id;
+                            $data['user_type'] =  get_class(auth()->user());
+                        }
+                        $collectionFolder = config('filament-media-manager.model.folder')::create($data);
                     }
 
                     $folder = config('filament-media-manager.model.folder')::where('collection', $component->name)
@@ -120,12 +130,19 @@ class MediaManagerInput extends Repeater
                         ->first();
 
                     if(!$folder){
-                        $folder = config('filament-media-manager.model.folder')::create([
+                        $data = [
                             'collection' => $component->name,
                             'model_type' =>  get_class($record),
                             'model_id' => $record->id,
                             'name' => $component->folderTitleFieldName ? $record->{$component->folderTitleFieldName} : Str::of( get_class($record))->afterLast('\\')->title()->toString() . '['.$record->id.']',
-                        ]);
+                        ];
+
+                        if(filament('filament-media-manager')->allowUserAccess){
+                            $data['user_id'] = auth()->user()->id;
+                            $data['user_type'] =  get_class(auth()->user());
+                        }
+
+                        $folder = config('filament-media-manager.model.folder')::create($data);
                     }
 
                     $callback = $media->getAttributeValue('uuid');

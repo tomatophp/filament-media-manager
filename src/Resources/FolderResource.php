@@ -61,6 +61,8 @@ class FolderResource extends Resource
     {
         return $form
             ->schema([
+                Forms\Components\Hidden::make('user_id')->visible(filament('filament-media-manager')->allowUserAccess)->default(auth()->id()),
+                Forms\Components\Hidden::make('user_type')->visible(filament('filament-media-manager')->allowUserAccess)->default(get_class(auth()->user())),
                 Forms\Components\TextInput::make('name')
                     ->label(trans('filament-media-manager::messages.folders.columns.name'))
                     ->columnSpanFull()

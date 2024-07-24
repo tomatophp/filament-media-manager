@@ -46,8 +46,10 @@ class FilamentMediaManagerServiceProvider extends ServiceProvider
            __DIR__.'/../resources/lang' => base_path('lang/vendor/filament-media-manager'),
         ], 'filament-media-manager-lang');
 
-        //Register Routes
-        $this->loadRoutesFrom(__DIR__.'/../routes/web.php');
+        if(config('filament-media-manager.api.active')){
+            //Register Routes
+            $this->loadRoutesFrom(__DIR__.'/../routes/api.php');
+        }
 
         $this->app->bind('filament-media-manager', function () {
             return new FilamentMediaManagerServices();

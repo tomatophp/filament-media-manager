@@ -13,6 +13,7 @@ use TomatoPHP\FilamentMediaManager\Resources\MediaResource;
 class FilamentMediaManagerPlugin implements Plugin
 {
     public ?bool $allowSubFolders = false;
+    public ?bool $allowUserAccess = false;
 
     public function getId(): string
     {
@@ -22,6 +23,12 @@ class FilamentMediaManagerPlugin implements Plugin
     public function allowSubFolders(bool $condation = true): static
     {
         $this->allowSubFolders = $condation;
+        return $this;
+    }
+
+    public function allowUserAccess(bool $condation = true): static
+    {
+        $this->allowUserAccess = $condation;
         return $this;
     }
 
