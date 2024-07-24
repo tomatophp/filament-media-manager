@@ -186,6 +186,18 @@ now you can allow user to access selected folder and restract user to access eac
 )
 ```
 
+now on your user model you can use this trait to allow user to access selected folder
+
+```php
+
+use TomatoPHP\FilamentMediaManager\Traits\InteractsWithMediaFolders;
+
+class User extends Authenticatable
+{
+    use InteractsWithMediaFolders;
+}
+```
+
 **NOTE** don't forget to migrate after update the plugin
 
 ## Folders API
