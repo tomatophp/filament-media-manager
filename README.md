@@ -3,7 +3,6 @@
 # Filament media manager
 
 [![Latest Stable Version](https://poser.pugx.org/tomatophp/filament-media-manager/version.svg)](https://packagist.org/packages/tomatophp/filament-media-manager)
-[![PHP Version Require](http://poser.pugx.org/tomatophp/filament-media-manager/require/php)](https://packagist.org/packages/tomatophp/filament-media-manager)
 [![License](https://poser.pugx.org/tomatophp/filament-media-manager/license.svg)](https://packagist.org/packages/tomatophp/filament-media-manager)
 [![Downloads](https://poser.pugx.org/tomatophp/filament-media-manager/d/total.svg)](https://packagist.org/packages/tomatophp/filament-media-manager)
 
