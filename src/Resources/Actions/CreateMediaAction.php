@@ -53,7 +53,7 @@ class CreateMediaAction
 
                 }
 
-                Notification::make()->title(trans('filament-media-manager::messages.media.notificaitons.create-media'))->send();
+                Notification::make()->title(trans('filament-media-manager::messages.media.notifications.create-media'))->send();
             });
     }
 }

@@ -48,7 +48,7 @@ return [
                 'label' => 'تعديل المجلد',
             ],
         ],
-        'notificaitons' => [
+        'notifications' => [
             'create-media' => 'تم إنشاء الوسائط بنجاح',
             'delete-folder' => 'تم حذف المجلد بنجاح',
             'edit-folder' => 'تم تعديل المجلد بنجاح',

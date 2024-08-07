@@ -81,7 +81,7 @@ class EditCurrentFolderAction
                                 ->label(trans('filament-media-manager::messages.folders.columns.users'))
                                 ->searchable()
                                 ->multiple()
-                                ->options(User::query()->where('id', '!=', auth()->user()->id)->pluck('name', 'id')->toArray())
+                                ->options(User::query()->where('id', '!=', auth()->user()->id)->pluck(config('filament-media-manager.user.column_name'), 'id')->toArray())
                         ])
                 ];
             })
@@ -94,7 +94,7 @@ class EditCurrentFolderAction
                     $folder->users()->sync($data['users']);
                 }
 
-                Notification::make()->title(trans('filament-media-manager::messages.media.notificaitons.edit-folder'))->send();
+                Notification::make()->title(trans('filament-media-manager::messages.media.notifications.edit-folder'))->send();
             });
     }
 }
