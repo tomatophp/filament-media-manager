@@ -24,7 +24,7 @@ class DeleteFolderAction
                 $folder->delete();
                 session()->forget('folder_id');
 
-                Notification::make()->title(trans('filament-media-manager::messages.media.notificaitons.delete-folder'))->send();
+                Notification::make()->title(trans('filament-media-manager::messages.media.notifications.delete-folder'))->send();
                 return redirect()->route('filament.'.filament()->getCurrentPanel()->getId().'.resources.folders.index');
             });
     }

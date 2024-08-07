@@ -94,7 +94,7 @@ class EditCurrentFolderAction
                     $folder->users()->sync($data['users']);
                 }
 
-                Notification::make()->title(trans('filament-media-manager::messages.media.notificaitons.edit-folder'))->send();
+                Notification::make()->title(trans('filament-media-manager::messages.media.notifications.edit-folder'))->send();
             });
     }
 }
