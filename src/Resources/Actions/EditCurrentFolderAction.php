@@ -81,7 +81,7 @@ class EditCurrentFolderAction
                                 ->label(trans('filament-media-manager::messages.folders.columns.users'))
                                 ->searchable()
                                 ->multiple()
-                                ->options(User::query()->where('id', '!=', auth()->user()->id)->pluck('name', 'id')->toArray())
+                                ->options(User::query()->where('id', '!=', auth()->user()->id)->pluck(config('filament-media-manager.user.column_name'), 'id')->toArray())
                         ])
                 ];
             })
