@@ -51,7 +51,7 @@ return [
                 'label' => 'Edit Folder',
             ],
         ],
-        'notificaitons' => [
+        'notifications' => [
             'create-media' => 'Media created successfully',
             'delete-folder' => 'Folder deleted successfully',
             'edit-folder' => 'Folder edited successfully',

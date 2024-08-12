@@ -179,7 +179,7 @@ class ListMedia extends ManageRecords
                 $media->delete();
 
                 Notification::make()
-                    ->title(trans('filament-media-manager::messages.media.notificaitons.delete-folder'))
+                    ->title(trans('filament-media-manager::messages.media.notifications.delete-folder'))
                     ->success()
                     ->send();
             });
