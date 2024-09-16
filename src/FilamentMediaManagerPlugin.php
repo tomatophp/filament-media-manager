@@ -4,6 +4,7 @@ namespace TomatoPHP\FilamentMediaManager;
 
 use Filament\Contracts\Plugin;
 use Filament\Panel;
+use Nwidart\Modules\Module;
 use TomatoPHP\FilamentArtisan\Pages\Artisan;
 use TomatoPHP\FilamentMediaManager\Pages\FoldersPage;
 use TomatoPHP\FilamentMediaManager\Resources\FolderResource;
@@ -12,6 +13,9 @@ use TomatoPHP\FilamentMediaManager\Resources\MediaResource;
 
 class FilamentMediaManagerPlugin implements Plugin
 {
+    private bool $isActive = false;
+
+
     public ?bool $allowSubFolders = false;
     public ?bool $allowUserAccess = false;
 
@@ -34,10 +38,21 @@ class FilamentMediaManagerPlugin implements Plugin
 
     public function register(Panel $panel): void
     {
-        $panel->resources([
-            FolderResource::class,
-            MediaResource::class
-        ]);
+        if(class_exists(Module::class)){
+            if(\Nwidart\Modules\Facades\Module::find('FilamentMediaManager')->isEnabled()){
+                $this->isActive = true;
+            }
+        }
+        else {
+            $this->isActive = true;
+        }
+
+        if($this->isActive) {
+            $panel->resources([
+                FolderResource::class,
+                MediaResource::class
+            ]);
+        }
 
     }
 

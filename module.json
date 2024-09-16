@@ -1,0 +1,29 @@
+{
+    "name": "FilamentMediaManager",
+    "alias": "filament-media-manager",
+    "description": {
+        "ar": "قم بادارة ملفات الوسائط الخاصة بك باستخدام مكتبة الوسائط من spatie بواجهة رسومية سهلة الاستخدام لـ FilamentPHP",
+        "en": "Manage your media files using spatie media library with easy to use GUI for FilamentPHP",
+        "gr": "Manage your media files using spatie media library with easy to use GUI for FilamentPHP",
+        "sp": "Manage your media files using spatie media library with easy to use GUI for FilamentPHP"
+    },
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "TomatoPHP\\FilamentMediaManager\\FilamentMediaManagerServiceProvider"
+    ],
+    "files": [],
+    "title": {
+        "ar": "مدير الوسائط",
+        "en": "Media Manager",
+        "gr": "Media Manager",
+        "sp": "Media Manager"
+    },
+    "color": "#cc1448",
+    "icon": "heroicon-c-photo",
+    "placeholder": "https://raw.githubusercontent.com/tomatophp/filament-media-manager/master/arts/3x1io-tomato-media-manager.jpg",
+    "type": "plugin",
+    "version": "v1.1.2",
+    "github" : "https://github.com/tomatophp/filament-media-manager",
+    "docs" : "https://github.com/tomatophp/filament-media-manager"
+}
