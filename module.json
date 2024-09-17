@@ -23,7 +23,7 @@
     "icon": "heroicon-c-photo",
     "placeholder": "https://raw.githubusercontent.com/tomatophp/filament-media-manager/master/arts/3x1io-tomato-media-manager.jpg",
     "type": "plugin",
-    "version": "v1.1.2",
+    "version": "v1.1.3",
     "github" : "https://github.com/tomatophp/filament-media-manager",
     "docs" : "https://github.com/tomatophp/filament-media-manager"
 }
