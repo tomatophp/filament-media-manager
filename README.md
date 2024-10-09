@@ -14,6 +14,12 @@ Manage your media files using spatie media library with easy to use GUI for Fila
 composer require tomatophp/filament-media-manager
 ```
 
+now you need to publish media migration 
+
+```bash
+php artisan vendor:publish --provider="Spatie\MediaLibrary\MediaLibraryServiceProvider" --tag="medialibrary-migrations"
+```
+
 after install your package please run this command
 
 ```bash
