@@ -174,10 +174,10 @@ please note that the `name ` of the component will be the same name of the colle
 you can allow create and manage subfolders on your media manager on `/app/Providers/Filament/AdminPanelProvider.php`
 
 ```php
-->plugin(
+->plugins([
     \TomatoPHP\FilamentMediaManager\FilamentMediaManagerPlugin::make()
         ->allowSubFolders()
-)
+])
 ```
 
 ## Allow User Access
