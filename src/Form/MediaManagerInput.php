@@ -31,6 +31,7 @@ use Spatie\MediaLibrary\MediaCollections\MediaCollection;
 use TomatoPHP\FilamentMediaManager\Models\Folder;
 use Closure;
 use TomatoPHP\FilamentMediaManager\Models\Media;
+use Spatie\MediaLibrary\MediaCollections\Models\Media as SpatieMedia;
 
 class MediaManagerInput extends Repeater
 {
@@ -58,6 +59,12 @@ class MediaManagerInput extends Repeater
             foreach ($setState as $item){
                 $state = array_filter(array_map(function (TemporaryUploadedFile | string $file) use ($mediaComponent, $record, $component, $item, $counter) {
                     if (! $file instanceof TemporaryUploadedFile) {
+                        $media = SpatieMedia::whereUuid($file)->first();
+                        $customProperties = collect($item)->filter(fn ($value, $key) => $key !== 'file')->toArray();
+                        foreach($customProperties as $key => $property){
+                            $media->setCustomProperty($key,$property);
+                        }
+                        $media->save();
                         return $file;
                     }
 
