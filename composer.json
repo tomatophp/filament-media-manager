@@ -19,7 +19,8 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Tests\\": "tests/"
+            "TomatoPHP\\FilamentMediaManager\\Tests\\": "tests/src",
+            "TomatoPHP\\FilamentMediaManager\\Tests\\Database\\Factories\\": "tests/database/factories"
         }
     },
     "extra": {
@@ -35,12 +36,40 @@
             "email": "info@3x1.io"
         }
     ],
+    "scripts": {
+        "testbench": "vendor/bin/testbench package:discover --ansi",
+        "db": "vendor/bin/testbench package:create-sqlite-db && vendor/bin/testbench migrate",
+        "analyse": "vendor/bin/phpstan analyse src tests",
+        "test": "vendor/bin/pest",
+        "test-coverage": "vendor/bin/pest --coverage",
+        "format": "vendor/bin/pint"
+    },
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "pestphp/pest-plugin": true,
+            "phpstan/extension-installer": true
+        }
+    },
     "require": {
-        "php": "^8.1|^8.2",
+        "php": "^8.2|^8.3|^8.4",
         "tomatophp/console-helpers": "^1.1",
-        "spatie/laravel-medialibrary": "^10.0|^11.0",
+        "spatie/laravel-medialibrary": "^11.12",
         "tomatophp/filament-icons": "^v1.1",
-        "filament/spatie-laravel-media-library-plugin": "^v3.0.0",
-        "filament/filament": "^v3.0.0"
-    }
+        "filament/spatie-laravel-media-library-plugin": "^v3.3",
+        "filament/filament": "^v3.3"
+    },
+    "require-dev": {
+        "laravel/pint": "^1.21",
+        "livewire/livewire": "^2.10|^3.0",
+        "nunomaduro/larastan": "^3.1",
+        "orchestra/testbench": "^10.0",
+        "pestphp/pest": "^3.7",
+        "pestphp/pest-plugin-laravel": "^3.1",
+        "pestphp/pest-plugin-livewire": "^3.0",
+        "phpstan/extension-installer": "^1.4",
+        "phpstan/phpstan-deprecation-rules": "^2.0",
+        "phpstan/phpstan-phpunit": "^2.0"
+    },
+    "version": "2.0.0"
 }

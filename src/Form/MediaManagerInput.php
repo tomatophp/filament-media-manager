@@ -2,43 +2,27 @@
 
 namespace TomatoPHP\FilamentMediaManager\Form;
 
-use Filament\Actions\ActionGroup;
+use Closure;
 use Filament\Forms\Components\Actions\Action;
-use Filament\Forms\Components\BaseFileUpload;
 use Filament\Forms\Components\Component;
-use Filament\Forms\Components\Contracts\HasHintActions;
-use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Repeater;
-use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
-use Filament\Forms\Components\TextInput;
-use Filament\Support\Components\ComponentManager;
-use Filament\Support\Enums\ActionSize;
-use Filament\Tables\Concerns\InteractsWithTable;
-use Filament\Tables\Contracts\HasTable;
-use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use League\Flysystem\UnableToCheckFileExistence;
-use Livewire\Attributes\On;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\MediaCollections\FileAdder;
 use Spatie\MediaLibrary\MediaCollections\MediaCollection;
-use TomatoPHP\FilamentMediaManager\Models\Folder;
-use Closure;
-use TomatoPHP\FilamentMediaManager\Models\Media;
 use Spatie\MediaLibrary\MediaCollections\Models\Media as SpatieMedia;
+use TomatoPHP\FilamentMediaManager\Models\Media;
 
 class MediaManagerInput extends Repeater
 {
-
     protected array $form = [];
 
     protected string | Closure | null $diskName = null;
+
     protected string | Closure | null $folderTitleFieldName = null;
 
     protected function setUp(): void
@@ -46,25 +30,26 @@ class MediaManagerInput extends Repeater
         parent::setUp();
 
         $this->saveRelationshipsUsing(static function (Repeater $component, HasMedia $record): void {
-            $mediaComponent = $component->childComponents[0]??null;
+            $mediaComponent = $component->childComponents[0] ?? null;
             $setState = $component->getState();
             $collectMediaIds = [];
-            foreach ($setState as $getMediaItems){
+            foreach ($setState as $getMediaItems) {
                 $collectMediaIds[] = array_keys($getMediaItems['file']);
             }
             $getState = [];
             $record->media()->where('collection_name', $component->name)->whereNotIn('uuid', $collectMediaIds)->delete();
 
             $counter = 0;
-            foreach ($setState as $item){
+            foreach ($setState as $item) {
                 $state = array_filter(array_map(function (TemporaryUploadedFile | string $file) use ($mediaComponent, $record, $component, $item, $counter) {
                     if (! $file instanceof TemporaryUploadedFile) {
                         $media = SpatieMedia::whereUuid($file)->first();
                         $customProperties = collect($item)->filter(fn ($value, $key) => $key !== 'file')->toArray();
-                        foreach($customProperties as $key => $property){
-                            $media->setCustomProperty($key,$property);
+                        foreach ($customProperties as $key => $property) {
+                            $media->setCustomProperty($key, $property);
                         }
                         $media->save();
+
                         return $file;
                     }
 
@@ -101,15 +86,15 @@ class MediaManagerInput extends Repeater
                         ->where('model_id', null)
                         ->where('collection', null)
                         ->first();
-                    if(!$homeFolder){
+                    if (! $homeFolder) {
                         $data = [
-                            'model_type' =>  get_class($record),
+                            'model_type' => get_class($record),
                             'model_id' => null,
-                            'name' => Str::of(get_class($record))->afterLast('\\')->title()->toString()
+                            'name' => Str::of(get_class($record))->afterLast('\\')->title()->toString(),
                         ];
-                        if(filament('filament-media-manager')->allowUserAccess){
+                        if (filament('filament-media-manager')->allowUserAccess) {
                             $data['user_id'] = auth()->user()->id;
-                            $data['user_type'] =  get_class(auth()->user());
+                            $data['user_type'] = get_class(auth()->user());
                         }
                         $homeFolder = config('filament-media-manager.model.folder')::create($data);
                     }
@@ -118,15 +103,15 @@ class MediaManagerInput extends Repeater
                         ->where('model_id', null)
                         ->where('collection', $component->name)
                         ->first();
-                    if(!$collectionFolder){
+                    if (! $collectionFolder) {
                         $data = [
                             'collection' => $component->name,
-                            'model_type' =>  get_class($record),
-                            'name' => Str::of($component->name)->title()->toString()
+                            'model_type' => get_class($record),
+                            'name' => Str::of($component->name)->title()->toString(),
                         ];
-                        if(filament('filament-media-manager')->allowUserAccess){
+                        if (filament('filament-media-manager')->allowUserAccess) {
                             $data['user_id'] = auth()->user()->id;
-                            $data['user_type'] =  get_class(auth()->user());
+                            $data['user_type'] = get_class(auth()->user());
                         }
                         $collectionFolder = config('filament-media-manager.model.folder')::create($data);
                     }
@@ -136,17 +121,17 @@ class MediaManagerInput extends Repeater
                         ->where('model_id', $record->id)
                         ->first();
 
-                    if(!$folder){
+                    if (! $folder) {
                         $data = [
                             'collection' => $component->name,
-                            'model_type' =>  get_class($record),
+                            'model_type' => get_class($record),
                             'model_id' => $record->id,
-                            'name' => $component->folderTitleFieldName ? $record->{$component->folderTitleFieldName} : Str::of( get_class($record))->afterLast('\\')->title()->toString() . '['.$record->id.']',
+                            'name' => $component->folderTitleFieldName ? $record->{$component->folderTitleFieldName} : Str::of(get_class($record))->afterLast('\\')->title()->toString() . '[' . $record->id . ']',
                         ];
 
-                        if(filament('filament-media-manager')->allowUserAccess){
+                        if (filament('filament-media-manager')->allowUserAccess) {
                             $data['user_id'] = auth()->user()->id;
-                            $data['user_type'] =  get_class(auth()->user());
+                            $data['user_type'] = get_class(auth()->user());
                         }
 
                         $folder = config('filament-media-manager.model.folder')::create($data);
@@ -177,7 +162,7 @@ class MediaManagerInput extends Repeater
                 $item['file'] = $state;
 
                 $getState[] = array_merge([
-                    "file" => array_keys($state)[0]
+                    'file' => array_keys($state)[0],
                 ], collect($item)->filter(fn ($value, $key) => $key !== 'file')->toArray());
 
                 $counter++;
@@ -194,12 +179,12 @@ class MediaManagerInput extends Repeater
                     ...array_flip($arguments['items']),
                     ...$component->getState(),
                 ];
-                $counter=0;
-                foreach ($items as $item){
-                    $media = Media::where('uuid', array_keys($item['file'])[0])->first();
-                    if($media){
+                $counter = 0;
+                foreach ($items as $item) {
+                    $media = config('filament-media-manager.model.media')::where('uuid', array_keys($item['file'])[0])->first();
+                    if ($media) {
                         $media->update([
-                            'order_column'=> $counter
+                            'order_column' => $counter,
                         ]);
                     }
                     $counter++;
@@ -214,29 +199,28 @@ class MediaManagerInput extends Repeater
         $this->deleteAction(static function (Action $action): void {
             $action
                 ->requiresConfirmation()
-                ->action(function (array $arguments, Repeater $component){
-                $items = $component->getState();
-                $media = Media::where('uuid', $items[$arguments['item']])->first();
-                if($media){
-                    $media->delete();
-                }
+                ->action(function (array $arguments, Repeater $component) {
+                    $items = $component->getState();
+                    $media = config('filament-media-manager.model.media')::where('uuid', $items[$arguments['item']])->first();
+                    if ($media) {
+                        $media->delete();
+                    }
 
-                unset($items[$arguments['item']]);
+                    unset($items[$arguments['item']]);
 
-                $component->state($items);
+                    $component->state($items);
 
-                $component->callAfterStateUpdated();
-            });
+                    $component->callAfterStateUpdated();
+                });
         });
 
-
         $this->loadStateFromRelationshipsUsing(static function (Repeater $component, HasMedia $record): void {
-            $mediaComponent = $component->childComponents[0]??null;
+            $mediaComponent = $component->childComponents[0] ?? null;
             /** @var Model&HasMedia $record */
             $media = $record->load('media')->getMedia($component->name ?? 'default');
 
             $state = [];
-            foreach ($media as $item){
+            foreach ($media as $item) {
                 $url = null;
 
                 if ($mediaComponent->getVisibility() === 'private') {
@@ -259,13 +243,12 @@ class MediaManagerInput extends Repeater
                 $url ??= $item?->getUrl();
 
                 $state[] = array_merge([
-                    "file" => $item->uuid
-                ],  $item->custom_properties);
+                    'file' => $item->uuid,
+                ], $item->custom_properties);
             }
             $component->state($state);
         });
     }
-
 
     /**
      * @param  array<Component> | Closure  $components
@@ -278,7 +261,7 @@ class MediaManagerInput extends Repeater
                 ->required()
                 ->storeFiles(false)
                 ->collection($this->name),
-        ],$components));
+        ], $components));
 
         return $this;
     }
@@ -317,6 +300,4 @@ class MediaManagerInput extends Repeater
 
         return $this;
     }
-
-
 }

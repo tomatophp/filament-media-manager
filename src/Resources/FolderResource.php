@@ -2,27 +2,21 @@
 
 namespace TomatoPHP\FilamentMediaManager\Resources;
 
-use Illuminate\Support\Str;
-use TomatoPHP\FilamentIcons\Components\IconPicker;
-use TomatoPHP\FilamentMediaManager\Resources\FolderResource\Pages;
-use TomatoPHP\FilamentMediaManager\Resources\FolderResource\RelationManagers;
-use TomatoPHP\FilamentMediaManager\Models\Folder;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Str;
+use TomatoPHP\FilamentIcons\Components\IconPicker;
+use TomatoPHP\FilamentMediaManager\Resources\FolderResource\Pages;
 
 class FolderResource extends Resource
 {
-
     protected static bool $isScopedToTenant = false;
 
-
     protected static ?string $navigationIcon = 'heroicon-o-folder';
-
 
     public static function getModel(): string
     {
@@ -36,13 +30,11 @@ class FolderResource extends Resource
 
     public static function getPluralLabel(): ?string
     {
-        if(request()->has('model_type') && !request()->has('collection')){
+        if (request()->has('model_type') && ! request()->has('collection')) {
             return str(request()->get('model_type'))->afterLast('\\')->title();
-        }
-        else if(request()->has('model_type') && request()->has('collection')){
+        } elseif (request()->has('model_type') && request()->has('collection')) {
             return str(request()->get('collection'))->title();
-        }
-        else {
+        } else {
             return trans('filament-media-manager::messages.folders.title');
         }
     }
@@ -92,18 +84,18 @@ class FolderResource extends Resource
                     ->columnSpanFull(),
                 Forms\Components\TextInput::make('password')
                     ->label(trans('filament-media-manager::messages.folders.columns.password'))
-                    ->hidden(fn(Forms\Get $get) => !$get('is_protected'))
+                    ->hidden(fn (Forms\Get $get) => ! $get('is_protected'))
                     ->password()
                     ->revealable()
                     ->required()
                     ->maxLength(255),
                 Forms\Components\TextInput::make('password_confirmation')
                     ->label(trans('filament-media-manager::messages.folders.columns.password_confirmation'))
-                    ->hidden(fn(Forms\Get $get) => !$get('is_protected'))
+                    ->hidden(fn (Forms\Get $get) => ! $get('is_protected'))
                     ->password()
                     ->required()
                     ->revealable()
-                    ->maxLength(255)
+                    ->maxLength(255),
             ])->columns(2);
     }
 
@@ -111,17 +103,15 @@ class FolderResource extends Resource
     {
         return $table
             ->modifyQueryUsing(function (Builder $query) {
-                if(request()->has('model_type') && !request()->has('collection')){
+                if (request()->has('model_type') && ! request()->has('collection')) {
                     $query->where('model_type', request()->get('model_type'))
                         ->where('model_id', null)
                         ->whereNotNull('collection');
-                }
-                else if(request()->has('model_type') && request()->has('collection')){
+                } elseif (request()->has('model_type') && request()->has('collection')) {
                     $query->where('model_type', request()->get('model_type'))
                         ->whereNotNull('model_id')
                         ->where('collection', request()->get('collection'));
-                }
-                else {
+                } else {
                     $query->where('model_id', null)
                         ->where('collection', null)->orWhere('model_type', null);
                 }
@@ -158,14 +148,14 @@ class FolderResource extends Resource
                         ->dateTime()
                         ->sortable()
                         ->toggleable(isToggledHiddenByDefault: true),
-                ])
+                ]),
             ])
             ->defaultPaginationPageOption(12)
             ->paginationPageOptions([
-                "12",
-                "24",
-                "48",
-                "96",
+                '12',
+                '24',
+                '48',
+                '96',
             ])
             ->filters([
                 //
@@ -190,7 +180,7 @@ class FolderResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListFolders::route('/')
+            'index' => Pages\ListFolders::route('/'),
         ];
     }
 }

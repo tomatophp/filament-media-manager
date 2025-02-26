@@ -5,59 +5,58 @@ namespace TomatoPHP\FilamentMediaManager;
 use Illuminate\Support\ServiceProvider;
 use TomatoPHP\FilamentMediaManager\Services\FilamentMediaManagerServices;
 
-
 class FilamentMediaManagerServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
-        //Register generate command
+        // Register generate command
         $this->commands([
-           \TomatoPHP\FilamentMediaManager\Console\FilamentMediaManagerInstall::class,
+            \TomatoPHP\FilamentMediaManager\Console\FilamentMediaManagerInstall::class,
         ]);
 
-        //Register Config file
-        $this->mergeConfigFrom(__DIR__.'/../config/filament-media-manager.php', 'filament-media-manager');
+        // Register Config file
+        $this->mergeConfigFrom(__DIR__ . '/../config/filament-media-manager.php', 'filament-media-manager');
 
-        //Publish Config
+        // Publish Config
         $this->publishes([
-           __DIR__.'/../config/filament-media-manager.php' => config_path('filament-media-manager.php'),
+            __DIR__ . '/../config/filament-media-manager.php' => config_path('filament-media-manager.php'),
         ], 'filament-media-manager-config');
 
-        //Register Migrations
-        $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
+        // Register Migrations
+        $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
 
-        //Publish Migrations
+        // Publish Migrations
         $this->publishes([
-           __DIR__.'/../database/migrations' => database_path('migrations'),
+            __DIR__ . '/../database/migrations' => database_path('migrations'),
         ], 'filament-media-manager-migrations');
-        //Register views
-        $this->loadViewsFrom(__DIR__.'/../resources/views', 'filament-media-manager');
+        // Register views
+        $this->loadViewsFrom(__DIR__ . '/../resources/views', 'filament-media-manager');
 
-        //Publish Views
+        // Publish Views
         $this->publishes([
-           __DIR__.'/../resources/views' => resource_path('views/vendor/filament-media-manager'),
+            __DIR__ . '/../resources/views' => resource_path('views/vendor/filament-media-manager'),
         ], 'filament-media-manager-views');
 
-        //Register Langs
-        $this->loadTranslationsFrom(__DIR__.'/../resources/lang', 'filament-media-manager');
+        // Register Langs
+        $this->loadTranslationsFrom(__DIR__ . '/../resources/lang', 'filament-media-manager');
 
-        //Publish Lang
+        // Publish Lang
         $this->publishes([
-           __DIR__.'/../resources/lang' => base_path('lang/vendor/filament-media-manager'),
+            __DIR__ . '/../resources/lang' => base_path('lang/vendor/filament-media-manager'),
         ], 'filament-media-manager-lang');
 
-        if(config('filament-media-manager.api.active')){
-            //Register Routes
-            $this->loadRoutesFrom(__DIR__.'/../routes/api.php');
+        if (config('filament-media-manager.api.active')) {
+            // Register Routes
+            $this->loadRoutesFrom(__DIR__ . '/../routes/api.php');
         }
 
         $this->app->bind('filament-media-manager', function () {
-            return new FilamentMediaManagerServices();
+            return new FilamentMediaManagerServices;
         });
     }
 
     public function boot(): void
     {
-        //you boot methods here
+        // you boot methods here
     }
 }

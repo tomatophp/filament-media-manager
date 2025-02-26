@@ -11,24 +11,24 @@ class FilamentMediaManagerServices
 {
     protected array $types = [];
 
-    public function register(MediaManagerType|array $type)
+    public function register(MediaManagerType | array $type)
     {
         if (is_array($type)) {
             foreach ($type as $t) {
                 $this->register($t);
             }
         } else {
-            if($type->js){
-                foreach ($type->js as $key=>$jsItem){
+            if ($type->js) {
+                foreach ($type->js as $key => $jsItem) {
                     FilamentAsset::register([
-                        Js::make($type->exstantion.'_js_'.$key, $jsItem),
+                        Js::make($type->exstantion . '_js_' . $key, $jsItem),
                     ]);
                 }
             }
-            if($type->css){
-                foreach ($type->css as $key=>$cssItem){
+            if ($type->css) {
+                foreach ($type->css as $key => $cssItem) {
                     FilamentAsset::register([
-                        Css::make($type->exstantion.'_css_'.$key, $cssItem),
+                        Css::make($type->exstantion . '_css_' . $key, $cssItem),
                     ]);
                 }
             }

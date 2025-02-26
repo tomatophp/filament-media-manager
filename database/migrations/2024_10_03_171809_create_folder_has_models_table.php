@@ -16,11 +16,11 @@ return new class extends Migration
         Schema::create('folder_has_models', function (Blueprint $table) {
             $table->id();
 
-            //Morph
+            // Morph
             $table->string('model_type');
             $table->unsignedBigInteger('model_id');
 
-            //Folder
+            // Folder
             $table->foreignId('folder_id')->constrained('folders')->onDelete('cascade');
 
             $table->timestamps();

@@ -2,7 +2,7 @@
 
 return [
     'empty' => [
-        'title' => "No Media or Folders Found",
+        'title' => 'No Media or Folders Found',
     ],
     'folders' => [
         'title' => 'Media Manager',
@@ -33,8 +33,8 @@ return [
             'order_column' => 'Order Column',
         ],
         'actions' => [
-            'sub_folder'=> [
-              'label' => "Create Sub Folder"
+            'sub_folder' => [
+                'label' => 'Create Sub Folder',
             ],
             'create' => [
                 'label' => 'Add Media',

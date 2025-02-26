@@ -2,7 +2,7 @@
 
 return [
     'empty' => [
-        'title' => "لا يوجد وسائط أو مجلدات",
+        'title' => 'لا يوجد وسائط أو مجلدات',
     ],
     'folders' => [
         'title' => 'مدير الوسائط',
@@ -30,8 +30,8 @@ return [
             'order_column' => 'عمود الترتيب',
         ],
         'actions' => [
-            'sub_folder'=> [
-                'label' => "إنشاء مجلد فرعي"
+            'sub_folder' => [
+                'label' => 'إنشاء مجلد فرعي',
             ],
             'create' => [
                 'label' => 'إضافة وسائط',

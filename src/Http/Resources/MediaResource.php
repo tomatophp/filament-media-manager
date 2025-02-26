@@ -3,8 +3,6 @@
 namespace TomatoPHP\FilamentMediaManager\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
-use Spatie\MediaLibrary\MediaCollections\Models\Media;
-use TomatoPHP\FilamentMediaManager\Models\Folder;
 
 class MediaResource extends JsonResource
 {

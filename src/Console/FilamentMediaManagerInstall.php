@@ -28,7 +28,6 @@ class FilamentMediaManagerInstall extends Command
         parent::__construct();
     }
 
-
     /**
      * Execute the console command.
      *
@@ -37,10 +36,6 @@ class FilamentMediaManagerInstall extends Command
     public function handle()
     {
         $this->info('Publish Vendor Assets');
-
-        \Artisan::call('vendor:publish', [
-            '--tag' => 'medialibrary-migrations'
-        ]);
 
         \Artisan::call('migrate');
 
