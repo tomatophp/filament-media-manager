@@ -30,7 +30,7 @@ return [
             'order_column' => 'عمود الترتيب',
         ],
         'actions' => [
-            'sub_folder'=> [
+            'sub_folder' => [
                 'label' => "إنشاء مجلد فرعي"
             ],
             'create' => [
