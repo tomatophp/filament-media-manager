@@ -2,7 +2,6 @@
 
 namespace TomatoPHP\FilamentMediaManager\Models;
 
-use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
@@ -50,7 +49,7 @@ class Folder extends Model implements HasMedia
 
     public function users()
     {
-        return $this->morphedByMany(User::class, 'model', 'folder_has_models', 'folder_id', 'model_id');
+        return $this->morphedByMany(config('filament-media-manager.user.model', \App\Models\User::class), 'model', 'folder_has_models', 'folder_id', 'model_id');
     }
 
     protected static function boot()

@@ -21,7 +21,8 @@ return [
     ],
 
     "user" => [
-      'column_name' => 'name', // Change the value if your field in users table is different from "name"
+        "model" => \App\Models\User::class, // Change this to your user model
+        "column_name" => "name", // Change the value if your field in users table is different from "name"
     ],
 
     "navigation_sort" => 0,
