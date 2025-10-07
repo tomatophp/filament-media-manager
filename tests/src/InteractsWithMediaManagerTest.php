@@ -5,7 +5,6 @@ namespace TomatoPHP\FilamentMediaManager\Tests;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
-use TomatoPHP\FilamentMediaManager\Models\Media;
 use TomatoPHP\FilamentMediaManager\Tests\Models\Product;
 use TomatoPHP\FilamentMediaManager\Tests\Models\User;
 
