@@ -5,6 +5,9 @@
 [![Latest Stable Version](https://poser.pugx.org/tomatophp/filament-media-manager/version.svg)](https://packagist.org/packages/tomatophp/filament-media-manager)
 [![License](https://poser.pugx.org/tomatophp/filament-media-manager/license.svg)](https://packagist.org/packages/tomatophp/filament-media-manager)
 [![Downloads](https://poser.pugx.org/tomatophp/filament-media-manager/d/total.svg)](https://packagist.org/packages/tomatophp/filament-media-manager)
+[![Dependabot Updates](https://github.com/tomatophp/filament-media-manager/actions/workflows/dependabot/dependabot-updates/badge.svg)](https://github.com/tomatophp/filament-media-manager/actions/workflows/dependabot/dependabot-updates)
+[![PHP Code Styling](https://github.com/tomatophp/filament-media-manager/actions/workflows/fix-php-code-styling.yml/badge.svg)](https://github.com/tomatophp/filament-media-manager/actions/workflows/fix-php-code-styling.yml)
+[![Tests](https://github.com/tomatophp/filament-media-manager/actions/workflows/tests.yml/badge.svg)](https://github.com/tomatophp/filament-media-manager/actions/workflows/tests.yml)
 
 Manage your media files using spatie media library with easy to use GUI for FilamentPHP
 
