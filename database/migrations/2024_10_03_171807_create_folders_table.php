@@ -16,18 +16,18 @@ return new class extends Migration
         Schema::create('folders', function (Blueprint $table) {
             $table->id();
 
-            //Morph
+            // Morph
             $table->string('model_type')->nullable();
             $table->unsignedBigInteger('model_id')->nullable();
 
-            //Folder
+            // Folder
             $table->string('name')->index();
             $table->string('collection')->nullable()->index();
             $table->string('description')->nullable();
             $table->string('icon')->nullable();
             $table->string('color')->nullable();
 
-            //Options
+            // Options
             $table->boolean('is_protected')->default(false)->nullable();
             $table->string('password')->nullable();
             $table->boolean('is_hidden')->default(false)->nullable();

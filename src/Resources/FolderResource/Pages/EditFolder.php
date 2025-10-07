@@ -2,9 +2,9 @@
 
 namespace TomatoPHP\FilamentMediaManager\Resources\FolderResource\Pages;
 
-use TomatoPHP\FilamentMediaManager\Resources\FolderResource;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
+use TomatoPHP\FilamentMediaManager\Resources\FolderResource;
 
 class EditFolder extends EditRecord
 {

@@ -2,7 +2,7 @@
 
 return [
     'empty' => [
-        'title' => "Medya veya Klasör Bulunamadı",
+        'title' => 'Medya veya Klasör Bulunamadı',
     ],
     'folders' => [
         'title' => 'Medya Yöneticisi',
@@ -20,6 +20,13 @@ return [
             'password' => 'Parola',
             'password_confirmation' => 'Parola Onayı',
         ],
+        'filters' => [
+            'all_folders' => 'Tüm klasörler',
+            'protected_only' => 'Yalnızca korumalı',
+            'public_only' => 'Yalnızca genel',
+            'created_from' => 'Oluşturma tarihi (başlangıç)',
+            'created_until' => 'Oluşturma tarihi (bitiş)',
+        ],
         'group' => 'İçerik',
     ],
     'media' => [
@@ -32,9 +39,15 @@ return [
             'size' => 'Boyut',
             'order_column' => 'Sıra Sütunu',
         ],
+        'filters' => [
+            'size_from' => 'Boyut (başlangıç KB)',
+            'size_to' => 'Boyut (bitiş KB)',
+            'created_from' => 'Oluşturma tarihi (başlangıç)',
+            'created_until' => 'Oluşturma tarihi (bitiş)',
+        ],
         'actions' => [
             'sub_folder' => [
-                'label' => "Alt Klasör Oluştur"
+                'label' => 'Alt Klasör Oluştur',
             ],
             'create' => [
                 'label' => 'Medya Ekle',

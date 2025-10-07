@@ -2,9 +2,8 @@
 
 namespace TomatoPHP\FilamentMediaManager\Resources\MediaResource\Pages;
 
-use TomatoPHP\FilamentMediaManager\Resources\MediaResource;
-use Filament\Actions;
 use Filament\Resources\Pages\CreateRecord;
+use TomatoPHP\FilamentMediaManager\Resources\MediaResource;
 
 class CreateMedia extends CreateRecord
 {

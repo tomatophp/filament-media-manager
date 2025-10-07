@@ -1,0 +1,22 @@
+parameters:
+    level: 5
+    paths:
+        - src
+    excludePaths:
+        - src/Http/Controllers/*
+        - src/Http/Resources/*
+    treatPhpDocTypesAsCertain: false
+    ignoreErrors:
+        - '#PHPDoc tag @method .* contains unknown class#'
+        - '#Unsafe usage of new static\(\)#'
+        - '#Parameter .* has invalid type Filament\\Forms\\Components\\Component#'
+        - '#Trait .* is used zero times and is not analysed#'
+        - '#Out of \d+ possible .+ types, only \d+ - [\d.]+ % actually have it#'
+        - '#Access to an undefined property .+::\$#'
+        - '#Call to an undefined method Filament\\Forms\\Components\\Repeater::#'
+        - '#Parameter \#1 \$view of method Filament\\Support\\Components\\ViewComponent::view\(\) expects#'
+        - '#Call to deprecated method#'
+        - '#Class App\\Models\\User not found#'
+        - '#Expression in empty\(\) is not falsy#'
+        - '#Parameter \#1 \$size of method Filament\\Forms\\Components\\BaseFileUpload::maxSize\(\)#'
+        - '#Relation .* is not found in .* model#'

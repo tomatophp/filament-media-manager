@@ -13,7 +13,6 @@ class FolderResource extends JsonResource
         $media = Media::query()
             ->where('collection_name', $this->collection);
 
-
         $subFolders = Folder::query()
             ->where('model_id', $this->id)
             ->where('model_type', "TomatoPHP\FilamentMediaManager\Models\Folder");

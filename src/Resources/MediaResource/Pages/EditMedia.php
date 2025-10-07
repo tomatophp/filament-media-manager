@@ -2,9 +2,9 @@
 
 namespace TomatoPHP\FilamentMediaManager\Resources\MediaResource\Pages;
 
-use TomatoPHP\FilamentMediaManager\Resources\MediaResource;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
+use TomatoPHP\FilamentMediaManager\Resources\MediaResource;
 
 class EditMedia extends EditRecord
 {

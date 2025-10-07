@@ -5,7 +5,6 @@ namespace TomatoPHP\FilamentMediaManager\Facade;
 use Illuminate\Support\Facades\Facade;
 
 /**
- *
  * @method static void register(MediaManagerType|array $type)
  * @method static array getTypes()
  */

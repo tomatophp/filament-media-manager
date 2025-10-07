@@ -2,8 +2,6 @@
 
 namespace TomatoPHP\FilamentMediaManager\Traits;
 
-use TomatoPHP\FilamentMediaManager\Models\Folder;
-
 trait InteractsWithMediaFolders
 {
     public function folders()

@@ -32,17 +32,12 @@ class FileInput extends SpatieMediaLibraryFileUpload
             $component->state($media);
         });
 
-        $this->afterStateHydrated(static function (BaseFileUpload $component, string | array | null $state): void {
+        $this->afterStateHydrated(static function (BaseFileUpload $component, string | array | null $state): void {});
 
-        });
-
-
-        $this->saveRelationshipsUsing(static function (SpatieMediaLibraryFileUpload $component) {
-
-        });
+        $this->saveRelationshipsUsing(static function (SpatieMediaLibraryFileUpload $component) {});
 
         $this->reorderUploadedFilesUsing(static function (SpatieMediaLibraryFileUpload $component, ?Model $record, array $state): array {
-
+            return $state;
         });
     }
 }

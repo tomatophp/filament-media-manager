@@ -2,20 +2,22 @@
 
 namespace TomatoPHP\FilamentMediaManager\Resources\Actions;
 
-use Illuminate\Support\Str;
-use TomatoPHP\FilamentIcons\Components\IconPicker;
-use TomatoPHP\FilamentMediaManager\Models\Folder;
 use Filament\Actions;
 use Filament\Forms;
 use Filament\Notifications\Notification;
+use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Components\Utilities\Set;
+use Illuminate\Support\Str;
+use TomatoPHP\FilamentIcons\Components\IconPicker;
+use TomatoPHP\FilamentMediaManager\Models\Folder;
 
 class CreateSubFolderAction
 {
     public static function make(int $folder_id): Actions\Action
     {
         return Actions\Action::make('create_sub_folder')
-            ->hidden(fn()=> !filament('filament-media-manager')->allowSubFolders)
-            ->mountUsing(function () use ($folder_id){
+            ->hidden(fn () => ! filament('filament-media-manager')->allowSubFolders)
+            ->mountUsing(function () use ($folder_id) {
                 session()->put('folder_id', $folder_id);
             })
             ->color('info')
@@ -23,12 +25,22 @@ class CreateSubFolderAction
             ->tooltip(trans('filament-media-manager::messages.media.actions.sub_folder.label'))
             ->label(trans('filament-media-manager::messages.media.actions.sub_folder.label'))
             ->icon('heroicon-o-folder-minus')
-            ->form([
+            ->fillForm(fn () => [
+                'name' => '',
+                'collection' => '',
+                'description' => '',
+                'icon' => '',
+                'color' => '',
+                'is_protected' => false,
+                'password' => '',
+                'password_confirmation' => '',
+            ])
+            ->schema([
                 Forms\Components\TextInput::make('name')
                     ->label(trans('filament-media-manager::messages.folders.columns.name'))
                     ->columnSpanFull()
                     ->lazy()
-                    ->afterStateUpdated(function (Forms\Set $set, Forms\Get $get) {
+                    ->afterStateUpdated(function (Set $set, Get $get) {
                         $set('collection', Str::slug($get('name')));
                     })
                     ->required()
@@ -53,22 +65,22 @@ class CreateSubFolderAction
                     ->columnSpanFull(),
                 Forms\Components\TextInput::make('password')
                     ->label(trans('filament-media-manager::messages.folders.columns.password'))
-                    ->hidden(fn(Forms\Get $get) => !$get('is_protected'))
+                    ->hidden(fn (Get $get) => ! $get('is_protected'))
                     ->password()
                     ->revealable()
                     ->required()
                     ->maxLength(255),
                 Forms\Components\TextInput::make('password_confirmation')
                     ->label(trans('filament-media-manager::messages.folders.columns.password_confirmation'))
-                    ->hidden(fn(Forms\Get $get) => !$get('is_protected'))
+                    ->hidden(fn (Get $get) => ! $get('is_protected'))
                     ->password()
                     ->required()
                     ->revealable()
-                    ->maxLength(255)
+                    ->maxLength(255),
             ])
             ->action(function (array $data) use ($folder_id) {
                 $folder = Folder::find($folder_id);
-                if($folder){
+                if ($folder) {
                     $data['user_id'] = auth()->user()->id;
                     $data['user_type'] = get_class(auth()->user());
                     $data['model_id'] = $folder_id;

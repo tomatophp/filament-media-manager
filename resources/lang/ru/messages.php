@@ -2,7 +2,7 @@
 
 return [
     'empty' => [
-        'title' => "Медиа или папки отсутствуют",
+        'title' => 'Медиа или папки отсутствуют',
     ],
     'folders' => [
         'title' => 'Медиа менеджер',
@@ -20,6 +20,13 @@ return [
             'password' => 'Пароль',
             'password_confirmation' => 'Подтверждение пароля',
         ],
+        'filters' => [
+            'all_folders' => 'Все папки',
+            'protected_only' => 'Только защищенные',
+            'public_only' => 'Только публичные',
+            'created_from' => 'Создано с',
+            'created_until' => 'Создано до',
+        ],
         'group' => 'Контент',
     ],
     'media' => [
@@ -32,9 +39,15 @@ return [
             'size' => 'Размер',
             'order_column' => 'Очередность колонок',
         ],
+        'filters' => [
+            'size_from' => 'Размер от (КБ)',
+            'size_to' => 'Размер до (КБ)',
+            'created_from' => 'Создано с',
+            'created_until' => 'Создано до',
+        ],
         'actions' => [
             'sub_folder' => [
-                'label' => "Создать подпапку"
+                'label' => 'Создать подпапку',
             ],
             'create' => [
                 'label' => 'Добавить медиа',

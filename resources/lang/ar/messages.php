@@ -2,7 +2,7 @@
 
 return [
     'empty' => [
-        'title' => "لا يوجد وسائط أو مجلدات",
+        'title' => 'لا يوجد وسائط أو مجلدات',
     ],
     'folders' => [
         'title' => 'مدير الوسائط',
@@ -17,6 +17,13 @@ return [
             'password' => 'كلمة المرور',
             'password_confirmation' => 'تأكيد كلمة المرور',
         ],
+        'filters' => [
+            'all_folders' => 'كل المجلدات',
+            'protected_only' => 'المحمية فقط',
+            'public_only' => 'العامة فقط',
+            'created_from' => 'تم الإنشاء من',
+            'created_until' => 'تم الإنشاء حتى',
+        ],
         'group' => 'المحتوي',
     ],
     'media' => [
@@ -29,9 +36,15 @@ return [
             'size' => 'الججم',
             'order_column' => 'عمود الترتيب',
         ],
+        'filters' => [
+            'size_from' => 'الحجم من (كيلوبايت)',
+            'size_to' => 'الحجم إلى (كيلوبايت)',
+            'created_from' => 'تم الإنشاء من',
+            'created_until' => 'تم الإنشاء حتى',
+        ],
         'actions' => [
             'sub_folder' => [
-                'label' => "إنشاء مجلد فرعي"
+                'label' => 'إنشاء مجلد فرعي',
             ],
             'create' => [
                 'label' => 'إضافة وسائط',
@@ -62,5 +75,23 @@ return [
             'url' => 'رابط',
             'delete-media' => 'حذف الوسائط',
         ],
+    ],
+    'picker' => [
+        'title' => 'اختر الوسائط',
+        'browse' => 'تصفح الوسائط',
+        'remove' => 'إزالة',
+        'select' => 'اختيار',
+        'cancel' => 'إلغاء',
+        'back' => 'رجوع',
+        'search' => 'بحث في المجلدات والملفات...',
+        'select_folder' => 'اختر مجلد لتصفح ملفات الوسائط',
+        'folders' => 'المجلدات',
+        'media_files' => 'ملفات الوسائط',
+        'empty' => 'لا توجد مجلدات أو ملفات وسائط',
+        'no_media_selected' => 'لم يتم اختيار وسائط',
+        'selected' => 'محدد',
+        'clear_all' => 'مسح الكل',
+        'confirm_remove' => 'إزالة الوسائط',
+        'confirm_remove_message' => 'هل أنت متأكد من إزالة هذا العنصر؟',
     ],
 ];
