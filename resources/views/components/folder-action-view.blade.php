@@ -154,11 +154,11 @@
     <div class="folder-container-{{$item->id}}">
         <div class="folder-icon-{{$item->id}}">
             @if($item->icon)
-                <x-icon name="{{$item->icon}}" class="folder-icon-content-{{$item->id}}"/>
+                <x-filament::icon name="{{$item->icon}}" class="folder-icon-content-{{$item->id}}"/>
             @endif
             @if($item->is_protected)
                 <div class="folder-lock-badge-{{$item->id}}">
-                    <x-icon name="heroicon-o-lock-closed" class="folder-lock-icon-{{$item->id}}" />
+                    <x-filament::icon name="heroicon-o-lock-closed" class="folder-lock-icon-{{$item->id}}" />
                 </div>
             @endif
         </div>
