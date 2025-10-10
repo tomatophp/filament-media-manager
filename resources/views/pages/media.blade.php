@@ -448,7 +448,7 @@
                             @elseif(str($item->mime_type)->contains('video'))
                                 <video src="{{ $item->getUrl() }}"></video>
                             @elseif(str($item->mime_type)->contains('audio'))
-                                <x-icon name="heroicon-o-musical-note" class="media-icon-large" style="color: #ec4899;" />
+                                <x-filament::icon name="heroicon-o-musical-note" class="media-icon-large" style="color: #ec4899;" />
                             @else
                                 @php
                                     $hasPreview = false;
@@ -462,10 +462,10 @@
                                     }
                                 @endphp
                                 @if($hasPreview && $type)
-                                    <x-icon :name="$type->icon" class="media-icon-large" style="color: {{ $fileIcon['color'] ?? '#9ca3af' }};" />
+                                    <x-filament::icon :name="$type->icon" class="media-icon-large" style="color: {{ $fileIcon['color'] ?? '#9ca3af' }};" />
                                 @else
                                     <div class="media-file-icon">
-                                        <x-icon :name="$fileIcon['icon']" class="media-file-icon-image" style="color: {{ $fileIcon['color'] }};" />
+                                        <x-filament::icon :name="$fileIcon['icon']" class="media-file-icon-image" style="color: {{ $fileIcon['color'] }};" />
                                         <span class="media-file-extension">{{ $extension }}</span>
                                     </div>
                                 @endif
@@ -517,7 +517,7 @@
                                          style="max-width: 95%; max-height: 95vh; object-fit: contain; cursor: zoom-out;"
                                          @click.stop />
                                     <button @click="fullscreen = false" class="fullscreen-close-btn">
-                                        <x-icon name="heroicon-o-x-mark" style="width: 1.5rem; height: 1.5rem;" />
+                                        <x-filament::icon name="heroicon-o-x-mark" style="width: 1.5rem; height: 1.5rem;" />
                                     </button>
                                 </div>
                             </div>
@@ -532,7 +532,7 @@
                         @elseif(str($item->mime_type)->contains('audio'))
                             <div class="media-preview-link">
                                 <div class="media-file-preview-icon">
-                                    <x-icon name="heroicon-o-musical-note" class="media-file-preview-icon-large" style="color: #ec4899;" />
+                                    <x-filament::icon name="heroicon-o-musical-note" class="media-file-preview-icon-large" style="color: #ec4899;" />
                                 </div>
                                 <audio class="media-video-full" controls style="width: 100%; margin-top: 1rem;">
                                     <source src="{{ $item->getUrl() }}" type="{{ $item->mime_type }}">
@@ -555,7 +555,7 @@
                             @else
                                 <a href="{{ $item->getUrl() }}" target="_blank" class="media-preview-link">
                                     <div class="media-file-preview-icon">
-                                        <x-icon :name="$fileIcon['icon']" class="media-file-preview-icon-large" style="color: {{ $fileIcon['color'] }};" />
+                                        <x-filament::icon :name="$fileIcon['icon']" class="media-file-preview-icon-large" style="color: {{ $fileIcon['color'] }};" />
                                         <span style="font-size: 1rem; font-weight: 600; text-transform: uppercase; color: {{ $fileIcon['color'] }};">{{ $extension }}</span>
                                         <span style="font-size: 0.875rem; color: rgb(107 114 128); margin-top: 0.5rem;">Click to download</span>
                                     </div>
