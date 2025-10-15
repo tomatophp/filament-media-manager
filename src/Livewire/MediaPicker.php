@@ -220,9 +220,9 @@ class MediaPicker extends Component implements HasActions, HasSchemas
                         ->first();
                     $this->currentFolderId = $modelTypeFolder?->id;
                 }
-                // Otherwise use parent_id or go to root
+                // Otherwise use model_id or go to root
                 else {
-                    $this->currentFolderId = $currentFolder->parent_id;
+                    $this->currentFolderId = $currentFolder->model_id;
                 }
             } else {
                 $this->currentFolderId = null;
@@ -290,12 +290,12 @@ class MediaPicker extends Component implements HasActions, HasSchemas
             ->success()
             ->send();
 
-        // Dispatch window event using JavaScript to update form and close modal
+        // Dispatch window event using JavaScript to update form without closing modals
         $this->js(
             "window.dispatchEvent(new CustomEvent('media-selected-{$this->pickerKey}', { detail: " . json_encode($selectedData) . ' }));'
         );
 
-        // Reset state
+        // Reset state but don't close the modal - user can click "Close" button
         $this->selectedMedia = [];
         $this->currentFolderId = null;
         $this->search = '';
@@ -322,9 +322,9 @@ class MediaPicker extends Component implements HasActions, HasSchemas
                         ->whereNotNull('model_id')
                         ->where('collection', $currentFolder->collection);
                 }
-                // Otherwise show subfolders using parent_id
+                // Otherwise show subfolders using model_id
                 else {
-                    $query->where('parent_id', $this->currentFolderId);
+                    $query->where('model_id', $this->currentFolderId);
                 }
             }
         } else {
