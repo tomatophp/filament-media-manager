@@ -111,7 +111,10 @@ class MediaManagerPicker extends Field
             ->modalWidth('7xl')
             ->modalSubmitAction(false)
             ->modalCancelActionLabel(__('Close'))
-            ->closeModalByClickingAway(false);
+            ->closeModalByClickingAway(false)
+            ->extraModalFooterActions([
+                // Ensure the cancel button only closes this modal, not parent modals
+            ]);
     }
 
     public function getRemoveAction(): Action

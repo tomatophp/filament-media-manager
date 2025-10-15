@@ -161,10 +161,9 @@
                 state = newState;
 
                 $wire.set('{{ $statePath }}', newState).then(() => {
-                    if ($wire.mountedActions && $wire.mountedActions.length > 0) {
-                        $wire.mountedActions = [];
-                        $wire.mountedActionsData = [];
-                    }
+                    // Auto-close only the media picker modal by calling unmountAction
+                    // This properly closes just the getBrowseAction modal without affecting parent modals
+                    $wire.call('unmountAction', 'getBrowseAction');
 
                     setTimeout(() => { isProcessing = false; }, 300);
                 });
