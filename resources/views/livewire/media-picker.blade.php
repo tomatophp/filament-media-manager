@@ -255,11 +255,11 @@
                             <div class="folder-container-picker-{{$folder->id}}">
                                 <div class="folder-icon-picker-{{$folder->id}}">
                                     @if($folder->icon)
-                                        <x-icon name="{{$folder->icon}}" class="folder-icon-content-picker-{{$folder->id}}"/>
+                                        <x-filament::icon name="{{$folder->icon}}" class="folder-icon-content-picker-{{$folder->id}}"/>
                                     @endif
                                     @if($folder->is_protected)
                                         <div class="folder-lock-badge-picker-{{$folder->id}}">
-                                            <x-icon name="heroicon-o-lock-closed" class="folder-lock-icon-picker-{{$folder->id}}" />
+                                            <x-filament::icon name="heroicon-o-lock-closed" class="folder-lock-icon-picker-{{$folder->id}}" />
                                         </div>
                                     @endif
                                 </div>
@@ -491,10 +491,10 @@
                                         @elseif(str($mediaItem->mime_type)->contains('video'))
                                             <video src="{{ $mediaItem->getUrl() }}"></video>
                                         @elseif(str($mediaItem->mime_type)->contains('audio'))
-                                            <x-icon name="heroicon-o-musical-note" class="media-icon-large-picker-{{$mediaItem->id}}" style="color: #ec4899;" />
+                                            <x-filament::icon name="heroicon-o-musical-note" class="media-icon-large-picker-{{$mediaItem->id}}" style="color: #ec4899;" />
                                         @else
                                             <div class="media-file-icon-picker-{{$mediaItem->id}}">
-                                                <x-icon :name="$fileIcon['icon']" class="media-file-icon-image-picker-{{$mediaItem->id}}" style="color: {{ $fileIcon['color'] }};" />
+                                                <x-filament::icon :name="$fileIcon['icon']" class="media-file-icon-image-picker-{{$mediaItem->id}}" style="color: {{ $fileIcon['color'] }};" />
                                                 <span class="media-file-extension-picker-{{$mediaItem->id}}">{{ $extension }}</span>
                                             </div>
                                         @endif
@@ -516,7 +516,7 @@
 
                                     @if(in_array($mediaItem->uuid, $selectedMedia))
                                         <div class="media-check-badge-picker-{{$mediaItem->id}}">
-                                            <x-icon name="heroicon-m-check" class="media-check-icon-picker-{{$mediaItem->id}}" />
+                                            <x-filament::icon name="heroicon-m-check" class="media-check-icon-picker-{{$mediaItem->id}}" />
                                         </div>
                                     @endif
                                 </div>

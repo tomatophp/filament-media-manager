@@ -138,7 +138,7 @@
     @elseif(str($getRecord()->mime_type)->contains('video'))
         <video src="{{ $getRecord()->getUrl() }}"></video>
     @elseif(str($getRecord()->mime_type)->contains('audio'))
-        <x-icon name="heroicon-o-musical-note" class="table-media-icon-large" style="color: #ec4899;" />
+        <x-filament::icon name="heroicon-o-musical-note" class="table-media-icon-large" style="color: #ec4899;" />
     @else
         @php
             $hasPreview = false;
@@ -152,10 +152,10 @@
             }
         @endphp
         @if($hasPreview && $type)
-            <x-icon :name="$type->icon" class="table-media-icon-large" style="color: {{ $fileIcon['color'] ?? '#9ca3af' }};" />
+            <x-filament::icon :name="$type->icon" class="table-media-icon-large" style="color: {{ $fileIcon['color'] ?? '#9ca3af' }};" />
         @else
             <div class="table-media-file-icon">
-                <x-icon :name="$fileIcon['icon']" class="table-media-file-icon-image" style="color: {{ $fileIcon['color'] }};" />
+                <x-filament::icon :name="$fileIcon['icon']" class="table-media-file-icon-image" style="color: {{ $fileIcon['color'] }};" />
                 <span class="table-media-file-extension">{{ $extension }}</span>
             </div>
         @endif
