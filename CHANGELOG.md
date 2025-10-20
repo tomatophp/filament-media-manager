@@ -2,7 +2,7 @@
 
 All notable changes to `filament-media-manager` will be documented in this file.
 
-## v4.1.0 - 2025-10-20
+## v4.0.3 - 2025-10-20
 
 ### 🎯 New Features
 
