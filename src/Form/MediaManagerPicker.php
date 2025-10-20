@@ -22,6 +22,8 @@ class MediaManagerPicker extends Field
 
     protected int | Closure | null $minItems = null;
 
+    protected bool | Closure $generateResponsiveImages = false;
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -37,11 +39,20 @@ class MediaManagerPicker extends Field
                 return;
             }
 
-            // Load media from media_has_models pivot table with ordering
-            $mediaData = \DB::table('media_has_models')
+            // Load media from media_has_models pivot table with ordering and collection filtering
+            $query = \DB::table('media_has_models')
                 ->where('model_type', get_class($record))
-                ->where('model_id', $record->id)
-                ->orderBy('order_column')
+                ->where('model_id', $record->id);
+
+            // Filter by collection name if specified
+            $collectionName = $component->getCollectionName();
+            if ($collectionName !== null) {
+                $query->where('collection_name', $collectionName);
+            } else {
+                $query->whereNull('collection_name');
+            }
+
+            $mediaData = $query->orderBy('order_column')
                 ->get(['media_id', 'order_column']);
 
             if ($mediaData->isEmpty()) {
@@ -73,12 +84,20 @@ class MediaManagerPicker extends Field
             }
 
             $state = $component->getState();
+            $collectionName = $component->getCollectionName();
 
-            // Clear existing attachments
-            \DB::table('media_has_models')
+            // Clear existing attachments for this collection
+            $deleteQuery = \DB::table('media_has_models')
                 ->where('model_type', get_class($record))
-                ->where('model_id', $record->id)
-                ->delete();
+                ->where('model_id', $record->id);
+
+            if ($collectionName !== null) {
+                $deleteQuery->where('collection_name', $collectionName);
+            } else {
+                $deleteQuery->whereNull('collection_name');
+            }
+
+            $deleteQuery->delete();
 
             if (empty($state)) {
                 return;
@@ -88,15 +107,24 @@ class MediaManagerPicker extends Field
             $uuids = is_array($state) ? $state : [$state];
             $media = Media::whereIn('uuid', $uuids)->get()->keyBy('uuid');
 
-            // Create new attachments with order
+            // Create new attachments with order, collection name, and responsive images flag
             $order = 0;
+            $responsiveImages = $component->shouldGenerateResponsiveImages();
+
             foreach ($uuids as $uuid) {
                 $mediaItem = $media->get($uuid);
                 if ($mediaItem) {
+                    // Generate responsive images if enabled
+                    if ($responsiveImages && $mediaItem->hasResponsiveImages()) {
+                        $mediaItem->registerMediaConversions();
+                    }
+
                     \DB::table('media_has_models')->insert([
                         'model_type' => get_class($record),
                         'model_id' => $record->id,
                         'media_id' => $mediaItem->id,
+                        'collection_name' => $collectionName,
+                        'responsive_images' => $responsiveImages,
                         'order_column' => $order++,
                         'created_at' => now(),
                         'updated_at' => now(),
@@ -231,5 +259,17 @@ class MediaManagerPicker extends Field
     public function getDiskName(): ?string
     {
         return $this->evaluate($this->diskName);
+    }
+
+    public function responsiveImages(bool | Closure $condition = true): static
+    {
+        $this->generateResponsiveImages = $condition;
+
+        return $this;
+    }
+
+    public function shouldGenerateResponsiveImages(): bool
+    {
+        return $this->evaluate($this->generateResponsiveImages);
     }
 }

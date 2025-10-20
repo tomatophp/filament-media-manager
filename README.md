@@ -56,6 +56,9 @@ finally, register the plugin on `/app/Providers/Filament/AdminPanelProvider.php`
 - 📊 Live Preview with thumbnails and file information
 - ✅ Selection validation (min/max items)
 - 🔄 Auto-save and modal management
+- 🏷️ Collection Names - Multiple pickers on same page with separate collections
+- 📱 Responsive Images - Automatic responsive image generation with Spatie
+- 🎯 Drag & Drop Reordering - Visual reordering of selected media
 
 ## Screenshots
 
@@ -113,7 +116,8 @@ public function form(Schema $schema): Schema
           ->multiple() // or ->single() (default is multiple)
           ->maxItems(5) // Maximum number of items that can be selected
           ->minItems(2) // Minimum number of items required
-          ->collection('products') // Filter by collection name
+          ->collection('products') // Separate collection for this picker
+          ->responsiveImages() // Enable responsive images generation
     ]);
 }
 
@@ -133,11 +137,48 @@ class Model extends Authenticatable {
 
 - **Multiple/Single Selection**: Use `->multiple()` or `->single()` to control selection mode
 - **Item Limits**: Set `->maxItems(n)` and `->minItems(n)` to enforce selection constraints
-- **Collection Filter**: Use `->collection('name')` to filter media by collection
+- **Collection Names**: Use `->collection('name')` to separate media for different pickers on the same page
+- **Responsive Images**: Use `->responsiveImages()` to automatically generate responsive images with Spatie
+- **Drag & Drop Reordering**: Visually reorder selected media items with drag handles
 - **Password Protected Folders**: Browse secure folders with password verification
 - **Live Preview**: See selected items with preview thumbnails, file info, and remove buttons
 - **Dark Mode Support**: Fully styled for both light and dark themes
 - **Auto-close Modal**: Modal automatically closes after selection with success notification
+
+### Multiple Pickers with Collections
+
+You can use multiple MediaManagerPicker components on the same page by using collection names:
+
+```php
+use TomatoPHP\FilamentMediaManager\Form\MediaManagerPicker;
+
+public function form(Schema $schema): Schema
+{
+    return $schema->components([
+        // Featured image picker
+        MediaManagerPicker::make('featured_image')
+            ->collection('featured')
+            ->single()
+            ->label('Featured Image'),
+
+        // Gallery picker
+        MediaManagerPicker::make('gallery_images')
+            ->collection('gallery')
+            ->multiple()
+            ->maxItems(10)
+            ->label('Gallery'),
+
+        // Attachments picker with responsive images
+        MediaManagerPicker::make('hero_image')
+            ->collection('hero')
+            ->single()
+            ->responsiveImages()
+            ->label('Hero Image'),
+    ]);
+}
+```
+
+Each picker maintains its own separate media attachments based on the collection name.
 
 ## Working with Media in Models
 
@@ -158,7 +199,8 @@ class Product extends Model
 
 ```php
 // Get all media attached via MediaManagerPicker
-$product->getMediaManagerMedia();
+$product->getMediaManagerMedia(); // All media
+$product->getMediaManagerMedia('featured'); // From specific collection
 
 // Get media by UUIDs
 $product->getMediaManagerMediaByUuids(['uuid-1', 'uuid-2']);
@@ -167,37 +209,49 @@ $product->getMediaManagerMediaByUuids(['uuid-1', 'uuid-2']);
 $product->getMediaManagerInputMedia('images');
 
 // Attach media programmatically
-$product->attachMediaManagerMedia(['uuid-1', 'uuid-2']);
+$product->attachMediaManagerMedia(['uuid-1', 'uuid-2']); // To default collection
+$product->attachMediaManagerMedia(['uuid-1', 'uuid-2'], 'gallery'); // To specific collection
 
 // Detach media
-$product->detachMediaManagerMedia(['uuid-1']); // Detach specific
-$product->detachMediaManagerMedia(); // Detach all
+$product->detachMediaManagerMedia(['uuid-1']); // Detach specific from default
+$product->detachMediaManagerMedia(['uuid-1'], 'gallery'); // From specific collection
+$product->detachMediaManagerMedia(null, 'gallery'); // Detach all from collection
 
 // Sync media (replace all with new)
-$product->syncMediaManagerMedia(['uuid-3', 'uuid-4']);
+$product->syncMediaManagerMedia(['uuid-3', 'uuid-4']); // Default collection
+$product->syncMediaManagerMedia(['uuid-3', 'uuid-4'], 'gallery'); // Specific collection
 
 // Check if media exists
-$product->hasMediaManagerMedia('uuid-1');
+$product->hasMediaManagerMedia('uuid-1'); // In default collection
+$product->hasMediaManagerMedia('uuid-1', 'featured'); // In specific collection
 
 // Get first media item
-$product->getFirstMediaManagerMedia();
+$product->getFirstMediaManagerMedia(); // From default
+$product->getFirstMediaManagerMedia('featured'); // From collection
 
 // Get media URL
-$product->getMediaManagerUrl(); // Original
-$product->getMediaManagerUrl('thumb'); // With conversion
+$product->getMediaManagerUrl(); // First from default collection
+$product->getMediaManagerUrl('featured'); // First from featured collection
 
 // Get all media URLs
-$product->getMediaManagerUrls(); // All originals
-$product->getMediaManagerUrls('thumb'); // All thumbnails
+$product->getMediaManagerUrls(); // All from default
+$product->getMediaManagerUrls('gallery'); // All from gallery collection
+
+// Responsive Images Methods
+$product->getMediaManagerResponsiveImages('hero'); // Get responsive data
+$product->getMediaManagerSrcset('hero'); // Get srcset for first media
+$product->getMediaManagerSrcsets('gallery'); // Get all srcsets
+$product->getMediaManagerResponsiveUrls('hero'); // Get responsive URLs for first
+$product->getAllMediaManagerResponsiveUrls('gallery'); // Get all responsive URLs
 ```
 
-#### Usage Example
+#### Usage Examples
 
 ```php
-// In your blade template
+// In your blade template - Basic usage
 @php
     $product = App\Models\Product::find(1);
-    $images = $product->getMediaManagerMedia();
+    $images = $product->getMediaManagerMedia('gallery');
 @endphp
 
 <div class="product-gallery">
@@ -206,7 +260,32 @@ $product->getMediaManagerUrls('thumb'); // All thumbnails
     @endforeach
 </div>
 
-// Get user avatar
+// Get featured image from specific collection
+@php
+    $featuredUrl = $product->getMediaManagerUrl('featured') ?? '/default-image.png';
+@endphp
+
+<img src="{{ $featuredUrl }}" alt="Featured Image">
+
+// Responsive Images with srcset
+@php
+    $heroSrcset = $product->getMediaManagerSrcset('hero');
+    $heroUrl = $product->getMediaManagerUrl('hero');
+@endphp
+
+<img src="{{ $heroUrl }}"
+     srcset="{{ $heroSrcset }}"
+     sizes="(max-width: 768px) 100vw, 50vw"
+     alt="Hero Image">
+
+// Gallery with responsive images
+@foreach($product->getMediaManagerResponsiveImages('gallery') as $item)
+    <img src="{{ $item['url'] }}"
+         srcset="{{ $item['srcset'] }}"
+         alt="Gallery Image">
+@endforeach
+
+// Get user avatar from specific collection
 @php
     $avatarUrl = auth()->user()->getMediaManagerUrl('avatar') ?? '/default-avatar.png';
 @endphp
@@ -215,6 +294,19 @@ $product->getMediaManagerUrls('thumb'); // All thumbnails
 ```
 
 For complete documentation of the trait, see [TRAITS.md](./docs/TRAITS.md).
+
+## Important: Run Migrations
+
+After installing or updating the package, make sure to run migrations to add the required database columns:
+
+```bash
+php artisan migrate
+```
+
+This will add the following columns to the `media_has_models` table:
+- `order_column` - For drag & drop reordering functionality
+- `collection_name` - For multiple pickers with separate collections
+- `responsive_images` - For responsive images support
 
 ## Add Custom Preview to selected type on the media manager
 

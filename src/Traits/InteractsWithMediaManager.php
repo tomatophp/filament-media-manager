@@ -9,16 +9,24 @@ use TomatoPHP\FilamentMediaManager\Models\Media;
 trait InteractsWithMediaManager
 {
     /**
-     * Get media attached via MediaManagerPicker by field name
+     * Get media attached via MediaManagerPicker by collection name
      *
-     * @param  string|null  $fieldName  Optional field name to filter by custom property
+     * @param  string|null  $collectionName  Optional collection name to filter by
      */
-    public function getMediaManagerMedia(?string $fieldName = null): Collection
+    public function getMediaManagerMedia(?string $collectionName = null): Collection
     {
-        $mediaData = DB::table('media_has_models')
+        $query = DB::table('media_has_models')
             ->where('model_type', get_class($this))
-            ->where('model_id', $this->id)
-            ->orderBy('order_column')
+            ->where('model_id', $this->id);
+
+        // Filter by collection name if specified
+        if ($collectionName !== null) {
+            $query->where('collection_name', $collectionName);
+        } else {
+            $query->whereNull('collection_name');
+        }
+
+        $mediaData = $query->orderBy('order_column')
             ->get(['media_id', 'order_column']);
 
         if ($mediaData->isEmpty()) {
@@ -26,14 +34,7 @@ trait InteractsWithMediaManager
         }
 
         $mediaIds = $mediaData->pluck('media_id')->toArray();
-        $query = Media::withoutGlobalScope('folder')->whereIn('id', $mediaIds);
-
-        // Optionally filter by field name if stored in custom properties
-        if ($fieldName) {
-            $query->whereJsonContains('custom_properties->field_name', $fieldName);
-        }
-
-        $media = $query->get()->keyBy('id');
+        $media = Media::withoutGlobalScope('folder')->whereIn('id', $mediaIds)->get()->keyBy('id');
 
         // Return media sorted by order_column as Eloquent Collection
         $sorted = $mediaData->map(function ($item) use ($media) {
@@ -77,20 +78,27 @@ trait InteractsWithMediaManager
      * Attach media to model via MediaManagerPicker
      *
      * @param  array  $mediaUuids  Array of media UUIDs
+     * @param  string|null  $collectionName  Optional collection name
      */
-    public function attachMediaManagerMedia(array $mediaUuids): void
+    public function attachMediaManagerMedia(array $mediaUuids, ?string $collectionName = null): void
     {
         $media = Media::withoutGlobalScope('folder')
             ->whereIn('uuid', $mediaUuids)
             ->get()
             ->keyBy('uuid');
 
-        // Get current max order
-        $maxOrder = DB::table('media_has_models')
+        // Get current max order for this collection
+        $maxOrderQuery = DB::table('media_has_models')
             ->where('model_type', get_class($this))
-            ->where('model_id', $this->id)
-            ->max('order_column') ?? -1;
+            ->where('model_id', $this->id);
 
+        if ($collectionName !== null) {
+            $maxOrderQuery->where('collection_name', $collectionName);
+        } else {
+            $maxOrderQuery->whereNull('collection_name');
+        }
+
+        $maxOrder = $maxOrderQuery->max('order_column') ?? -1;
         $order = $maxOrder + 1;
 
         foreach ($mediaUuids as $uuid) {
@@ -104,6 +112,7 @@ trait InteractsWithMediaManager
                     'model_type' => get_class($this),
                     'model_id' => $this->id,
                     'media_id' => $mediaItem->id,
+                    'collection_name' => $collectionName,
                 ],
                 [
                     'order_column' => $order++,
@@ -118,12 +127,20 @@ trait InteractsWithMediaManager
      * Detach media from model via MediaManagerPicker
      *
      * @param  array|null  $mediaUuids  Array of media UUIDs to detach, or null to detach all
+     * @param  string|null  $collectionName  Optional collection name
      */
-    public function detachMediaManagerMedia(?array $mediaUuids = null): void
+    public function detachMediaManagerMedia(?array $mediaUuids = null, ?string $collectionName = null): void
     {
         $query = DB::table('media_has_models')
             ->where('model_type', get_class($this))
             ->where('model_id', $this->id);
+
+        if ($collectionName !== null) {
+            $query->where('collection_name', $collectionName);
+        } elseif ($collectionName === null && $mediaUuids === null) {
+            // Only apply whereNull when detaching all and no collection specified
+            $query->whereNull('collection_name');
+        }
 
         if ($mediaUuids !== null) {
             $mediaIds = Media::withoutGlobalScope('folder')
@@ -143,14 +160,22 @@ trait InteractsWithMediaManager
      * Sync media with model (detach all and attach new)
      *
      * @param  array  $mediaUuids  Array of media UUIDs (order preserved)
+     * @param  string|null  $collectionName  Optional collection name
      */
-    public function syncMediaManagerMedia(array $mediaUuids): void
+    public function syncMediaManagerMedia(array $mediaUuids, ?string $collectionName = null): void
     {
-        // Clear all existing attachments
-        DB::table('media_has_models')
+        // Clear existing attachments for this collection
+        $deleteQuery = DB::table('media_has_models')
             ->where('model_type', get_class($this))
-            ->where('model_id', $this->id)
-            ->delete();
+            ->where('model_id', $this->id);
+
+        if ($collectionName !== null) {
+            $deleteQuery->where('collection_name', $collectionName);
+        } else {
+            $deleteQuery->whereNull('collection_name');
+        }
+
+        $deleteQuery->delete();
 
         if (empty($mediaUuids)) {
             return;
@@ -173,6 +198,7 @@ trait InteractsWithMediaManager
                 'model_type' => get_class($this),
                 'model_id' => $this->id,
                 'media_id' => $mediaItem->id,
+                'collection_name' => $collectionName,
                 'order_column' => $order++,
                 'created_at' => now(),
                 'updated_at' => now(),
@@ -184,8 +210,9 @@ trait InteractsWithMediaManager
      * Check if model has specific media attached
      *
      * @param  string  $mediaUuid  Media UUID to check
+     * @param  string|null  $collectionName  Optional collection name
      */
-    public function hasMediaManagerMedia(string $mediaUuid): bool
+    public function hasMediaManagerMedia(string $mediaUuid, ?string $collectionName = null): bool
     {
         $media = Media::withoutGlobalScope('folder')
             ->where('uuid', $mediaUuid)
@@ -195,11 +222,16 @@ trait InteractsWithMediaManager
             return false;
         }
 
-        return DB::table('media_has_models')
+        $query = DB::table('media_has_models')
             ->where('model_type', get_class($this))
             ->where('model_id', $this->id)
-            ->where('media_id', $media->id)
-            ->exists();
+            ->where('media_id', $media->id);
+
+        if ($collectionName !== null) {
+            $query->where('collection_name', $collectionName);
+        }
+
+        return $query->exists();
     }
 
     /**
@@ -209,13 +241,7 @@ trait InteractsWithMediaManager
      */
     public function getFirstMediaManagerMedia(?string $collectionName = null): ?Media
     {
-        $media = $this->getMediaManagerMedia();
-
-        if ($collectionName) {
-            $media = $media->where('collection_name', $collectionName);
-        }
-
-        return $media->first();
+        return $this->getMediaManagerMedia($collectionName)->first();
     }
 
     /**
@@ -241,13 +267,113 @@ trait InteractsWithMediaManager
      */
     public function getMediaManagerUrls(?string $collectionName = null): array
     {
-        $media = $this->getMediaManagerMedia();
+        return $this->getMediaManagerMedia($collectionName)
+            ->map(fn ($mediaItem) => $mediaItem->getUrl())
+            ->toArray();
+    }
 
-        if ($collectionName) {
-            $media = $media->where('collection_name', $collectionName);
+    /**
+     * Get responsive images for media from MediaManagerPicker
+     *
+     * @param  string|null  $collectionName  Optional collection name to filter by
+     * @return \Illuminate\Support\Collection Collection of media with responsive images data
+     */
+    public function getMediaManagerResponsiveImages(?string $collectionName = null): Collection
+    {
+        $query = DB::table('media_has_models')
+            ->where('model_type', get_class($this))
+            ->where('model_id', $this->id)
+            ->where('responsive_images', true);
+
+        if ($collectionName !== null) {
+            $query->where('collection_name', $collectionName);
+        } else {
+            $query->whereNull('collection_name');
         }
 
-        return $media->map(fn ($mediaItem) => $mediaItem->getUrl())
+        $mediaData = $query->orderBy('order_column')
+            ->get(['media_id', 'order_column']);
+
+        if ($mediaData->isEmpty()) {
+            return new Collection;
+        }
+
+        $mediaIds = $mediaData->pluck('media_id')->toArray();
+        $media = Media::withoutGlobalScope('folder')->whereIn('id', $mediaIds)->get()->keyBy('id');
+
+        // Return media sorted by order_column with responsive images
+        $sorted = $mediaData->map(function ($item) use ($media) {
+            $mediaItem = $media->get($item->media_id);
+            if (! $mediaItem) {
+                return null;
+            }
+
+            return [
+                'media' => $mediaItem,
+                'url' => $mediaItem->getUrl(),
+                'responsive_urls' => $mediaItem->getResponsiveImageUrls(),
+                'srcset' => $mediaItem->getSrcset(),
+            ];
+        })->filter()->values()->all();
+
+        return new Collection($sorted);
+    }
+
+    /**
+     * Get responsive images srcset attribute for first media item
+     *
+     * @param  string|null  $collectionName  Optional collection name to filter by
+     */
+    public function getMediaManagerSrcset(?string $collectionName = null): ?string
+    {
+        $responsiveImages = $this->getMediaManagerResponsiveImages($collectionName);
+
+        if ($responsiveImages->isEmpty()) {
+            return null;
+        }
+
+        return $responsiveImages->first()['srcset'] ?? null;
+    }
+
+    /**
+     * Get all responsive images srcset attributes
+     *
+     * @param  string|null  $collectionName  Optional collection name to filter by
+     */
+    public function getMediaManagerSrcsets(?string $collectionName = null): array
+    {
+        return $this->getMediaManagerResponsiveImages($collectionName)
+            ->pluck('srcset')
+            ->filter()
+            ->toArray();
+    }
+
+    /**
+     * Get responsive image URLs for first media item
+     *
+     * @param  string|null  $collectionName  Optional collection name to filter by
+     */
+    public function getMediaManagerResponsiveUrls(?string $collectionName = null): ?array
+    {
+        $responsiveImages = $this->getMediaManagerResponsiveImages($collectionName);
+
+        if ($responsiveImages->isEmpty()) {
+            return null;
+        }
+
+        return $responsiveImages->first()['responsive_urls'] ?? null;
+    }
+
+    /**
+     * Get all responsive image URLs for all media
+     *
+     * @param  string|null  $collectionName  Optional collection name to filter by
+     */
+    public function getAllMediaManagerResponsiveUrls(?string $collectionName = null): array
+    {
+        return $this->getMediaManagerResponsiveImages($collectionName)
+            ->pluck('responsive_urls')
+            ->filter()
             ->toArray();
     }
 }

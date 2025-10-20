@@ -6,6 +6,69 @@ All notable changes to `filament-media-manager` will be documented in this file.
 
 ### 🎯 New Features
 
+#### Collection Names Support
+- **Multi-Picker Support** - Added collection name support for multiple pickers on the same page
+  - New `collection_name` column in `media_has_models` pivot table
+  - Use `->collection('name')` method to specify collection for each picker
+  - Each picker maintains its own separate media attachments
+  - Collection filtering in all trait methods
+  - Backward compatible (null collection name supported)
+
+- **Migration**: `2024_10_21_000000_add_collection_name_to_media_has_models_table.php`
+  - Added `collection_name` (nullable string) column
+  - Added `responsive_images` (boolean, default false) column
+  - Supports rollback with proper column cleanup
+
+- **Updated Methods with Collection Support**:
+  ```php
+  // Define separate collections for different pickers
+  Forms\Components\MediaManagerPicker::make('featured_image')
+      ->collection('featured')
+      ->single();
+
+  Forms\Components\MediaManagerPicker::make('gallery_images')
+      ->collection('gallery')
+      ->multiple();
+
+  // Retrieve media by collection
+  $product->getMediaManagerMedia('featured');
+  $product->getMediaManagerMedia('gallery');
+  $product->getMediaManagerUrl('featured');
+  $product->getMediaManagerUrls('gallery');
+  ```
+
+#### Responsive Images Support
+- **Spatie Media Library Integration** - Added responsive images support using Spatie's built-in functionality
+  - New `->responsiveImages()` method on MediaManagerPicker
+  - Automatic responsive image generation when enabled
+  - Responsive images flag stored in pivot table
+  - Multiple methods to retrieve responsive image URLs and srcset
+
+- **New Trait Methods for Responsive Images**:
+  - `getMediaManagerResponsiveImages(?string $collectionName = null)` - Get media with responsive image data
+  - `getMediaManagerSrcset(?string $collectionName = null)` - Get srcset attribute for first media
+  - `getMediaManagerSrcsets(?string $collectionName = null)` - Get all srcset attributes
+  - `getMediaManagerResponsiveUrls(?string $collectionName = null)` - Get responsive URLs for first media
+  - `getAllMediaManagerResponsiveUrls(?string $collectionName = null)` - Get all responsive URLs
+
+- **Usage Example**:
+  ```php
+  // Enable responsive images
+  Forms\Components\MediaManagerPicker::make('hero_image')
+      ->collection('hero')
+      ->single()
+      ->responsiveImages();
+
+  // In Blade templates
+  <img src="{{ $model->getMediaManagerUrl('hero') }}"
+       srcset="{{ $model->getMediaManagerSrcset('hero') }}"
+       alt="Hero Image">
+
+  // Get detailed responsive data
+  $responsiveImages = $model->getMediaManagerResponsiveImages('gallery');
+  // Returns: ['media' => $media, 'url' => $url, 'responsive_urls' => [...], 'srcset' => '...']
+  ```
+
 #### Media Ordering & Reordering
 - **Drag & Drop Reordering** - Added drag and drop functionality to reorder media items in MediaManagerPicker
   - Visual drag handle (three bars icon) appears when multiple items are selected
@@ -81,16 +144,29 @@ All notable changes to `filament-media-manager` will be documented in this file.
 
 #### Backend Updates
 - `src/Form/MediaManagerPicker.php`
-  - `afterStateHydrated()`: Now loads and sorts media by `order_column`
-  - `saveRelationshipsUsing()`: Saves media with sequential order values
+  - Added `$collectionName` property and `collection()` method
+  - Added `$generateResponsiveImages` property and `responsiveImages()` method
+  - Added `shouldGenerateResponsiveImages()` getter method
+  - `afterStateHydrated()`: Now loads and sorts media by `order_column` and filters by `collection_name`
+  - `saveRelationshipsUsing()`: Saves media with sequential order values, collection name, and responsive images flag
+  - Generates responsive images when flag is enabled
 
 - `src/Traits/InteractsWithMediaManager.php`
-  - `getMediaManagerMedia()`: Returns Eloquent Collection sorted by order
-  - `attachMediaManagerMedia()`: Assigns incremental order values
-  - `syncMediaManagerMedia()`: Rewritten to preserve array order
-  - `getFirstMediaManagerMedia()`: Updated to accept collection name filter
-  - `getMediaManagerUrl()`: Changed to accept collection name instead of conversion
-  - `getMediaManagerUrls()`: Changed to accept collection name instead of conversion
+  - **Collection Name Support**: All methods updated to accept optional `$collectionName` parameter
+  - `getMediaManagerMedia(?string $collectionName)`: Filters by collection name and returns sorted by order
+  - `attachMediaManagerMedia(array $uuids, ?string $collectionName)`: Supports collection-specific attachments
+  - `detachMediaManagerMedia(?array $uuids, ?string $collectionName)`: Supports collection-specific detachment
+  - `syncMediaManagerMedia(array $uuids, ?string $collectionName)`: Collection-aware sync operation
+  - `hasMediaManagerMedia(string $uuid, ?string $collectionName)`: Collection-aware existence check
+  - `getFirstMediaManagerMedia(?string $collectionName)`: Returns first from specific collection
+  - `getMediaManagerUrl(?string $collectionName)`: Gets URL from specific collection
+  - `getMediaManagerUrls(?string $collectionName)`: Gets all URLs from specific collection
+  - **New Responsive Images Methods**:
+    - `getMediaManagerResponsiveImages(?string $collectionName)`: Get media with responsive data
+    - `getMediaManagerSrcset(?string $collectionName)`: Get srcset for first media
+    - `getMediaManagerSrcsets(?string $collectionName)`: Get all srcsets
+    - `getMediaManagerResponsiveUrls(?string $collectionName)`: Get responsive URLs for first media
+    - `getAllMediaManagerResponsiveUrls(?string $collectionName)`: Get all responsive URLs
 
 - `src/Livewire/MediaPicker.php`
   - `selectMedia()`: Fixed event detail structure with consistent wrapping
@@ -114,19 +190,23 @@ All notable changes to `filament-media-manager` will be documented in this file.
 
 ### 📋 Migration Guide
 
-If upgrading from v4.0.0:
+If upgrading from v4.0.0 or v4.0.2:
 
-1. **Run the new migration**:
+1. **Run the new migrations**:
    ```bash
    php artisan migrate
    ```
+   This will add:
+   - `order_column` (if upgrading from v4.0.0)
+   - `collection_name` column
+   - `responsive_images` column
 
 2. **Update trait method calls** if using conversions:
    ```php
    // Old (v4.0.0)
    $product->getMediaManagerUrl('thumb'); // Got thumbnail conversion
 
-   // New (v4.1.0)
+   // New (v4.0.3)
    $product->getMediaManagerUrl('gallery'); // Gets first from 'gallery' collection
 
    // For conversions, use Spatie directly:
@@ -134,7 +214,35 @@ If upgrading from v4.0.0:
    $thumbnailUrl = $media?->getUrl('thumb');
    ```
 
-3. **Existing media order**: Existing media without `order_column` values will still work (nullable column). Order will be applied on next save.
+3. **Using multiple pickers on the same page**:
+   ```php
+   // Now you can use collection names to separate pickers
+   Forms\Components\MediaManagerPicker::make('featured_image')
+       ->collection('featured')
+       ->single();
+
+   Forms\Components\MediaManagerPicker::make('gallery_images')
+       ->collection('gallery')
+       ->multiple();
+
+   // Each will maintain separate media attachments
+   ```
+
+4. **Using responsive images**:
+   ```php
+   // Enable responsive images
+   Forms\Components\MediaManagerPicker::make('hero_image')
+       ->collection('hero')
+       ->responsiveImages();
+
+   // Retrieve responsive images
+   $srcset = $model->getMediaManagerSrcset('hero');
+   ```
+
+5. **Backward Compatibility**:
+   - Existing media without `order_column` values will still work (nullable column). Order will be applied on next save.
+   - Existing media without `collection_name` will work as before (defaults to null)
+   - Responsive images are opt-in via `->responsiveImages()` method
 
 ---
 
