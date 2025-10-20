@@ -37,25 +37,31 @@ class MediaManagerPicker extends Field
                 return;
             }
 
-            // Load media from media_has_models pivot table
-            $mediaIds = \DB::table('media_has_models')
+            // Load media from media_has_models pivot table with ordering
+            $mediaData = \DB::table('media_has_models')
                 ->where('model_type', get_class($record))
                 ->where('model_id', $record->id)
-                ->pluck('media_id')
-                ->toArray();
+                ->orderBy('order_column')
+                ->get(['media_id', 'order_column']);
 
-            if (empty($mediaIds)) {
+            if ($mediaData->isEmpty()) {
                 $component->state($component->isMultiple() ? [] : null);
 
                 return;
             }
 
-            $media = Media::whereIn('id', $mediaIds)->get();
+            $mediaIds = $mediaData->pluck('media_id')->toArray();
+            $media = Media::whereIn('id', $mediaIds)->get()->keyBy('id');
+
+            // Sort media by order_column
+            $orderedMedia = $mediaData->map(function ($item) use ($media) {
+                return $media->get($item->media_id);
+            })->filter();
 
             if ($component->isMultiple()) {
-                $component->state($media->pluck('uuid')->toArray());
+                $component->state($orderedMedia->pluck('uuid')->toArray());
             } else {
-                $component->state($media->first()?->uuid);
+                $component->state($orderedMedia->first()?->uuid);
             }
         });
 
@@ -78,19 +84,24 @@ class MediaManagerPicker extends Field
                 return;
             }
 
-            // Get media by UUIDs
+            // Get media by UUIDs and maintain order
             $uuids = is_array($state) ? $state : [$state];
-            $media = Media::whereIn('uuid', $uuids)->get();
+            $media = Media::whereIn('uuid', $uuids)->get()->keyBy('uuid');
 
-            // Create new attachments
-            foreach ($media as $mediaItem) {
-                \DB::table('media_has_models')->insert([
-                    'model_type' => get_class($record),
-                    'model_id' => $record->id,
-                    'media_id' => $mediaItem->id,
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ]);
+            // Create new attachments with order
+            $order = 0;
+            foreach ($uuids as $uuid) {
+                $mediaItem = $media->get($uuid);
+                if ($mediaItem) {
+                    \DB::table('media_has_models')->insert([
+                        'model_type' => get_class($record),
+                        'model_id' => $record->id,
+                        'media_id' => $mediaItem->id,
+                        'order_column' => $order++,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]);
+                }
             }
         });
     }

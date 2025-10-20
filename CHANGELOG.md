@@ -2,6 +2,142 @@
 
 All notable changes to `filament-media-manager` will be documented in this file.
 
+## v4.1.0 - 2025-10-20
+
+### 🎯 New Features
+
+#### Media Ordering & Reordering
+- **Drag & Drop Reordering** - Added drag and drop functionality to reorder media items in MediaManagerPicker
+  - Visual drag handle (three bars icon) appears when multiple items are selected
+  - Smooth animation during drag (150ms)
+  - Ghost effect while dragging (40% opacity)
+  - Cursor changes to "grab" on hover over drag handle
+  - Only displays for multiple selection mode with 2+ items
+  - Proper cleanup and reinitialization of Sortable instances
+
+- **Order Column Support** - Added `order_column` to `media_has_models` pivot table
+  - New migration: `2024_10_20_000000_add_order_column_to_media_has_models_table.php`
+  - Unsigned integer column with index for performance
+  - Nullable to support backward compatibility
+  - Automatically managed during attach/sync operations
+
+- **Order Persistence**
+  - Media items maintain their order across save/load operations
+  - Order preserved when using `attachMediaManagerMedia()`
+  - Order preserved when using `syncMediaManagerMedia()`
+  - Order reflected in all `getMediaManagerMedia()` calls
+  - Order properly hydrated when editing existing records
+
+### 🔧 Bug Fixes
+
+#### MediaManagerPicker Selection Issues
+- **Fixed: Media selection not being set to form** - Resolved inconsistent event detail structure
+  - Changed from direct data to wrapped structure: `{ media: ... }`
+  - Ensures reliable state updates across all scenarios
+  - Handles both single and multiple selection modes
+  - Fixed race conditions with `isProcessing` flag
+
+- **Fixed: Reordering persistence** - Completely rewrote view logic for reliable drag & drop
+  - Server-side ordering now respects state array order
+  - Alpine.js state properly synced with Livewire
+  - Added `wire:key` for proper Livewire DOM tracking
+  - State watcher reinitializes Sortable after re-renders
+  - Prevents order from reverting after drag operations
+
+#### InteractsWithMediaManager Trait Updates
+- **Collection Name Parameter** - Changed `getMediaManagerUrl()` and `getMediaManagerUrls()` methods
+  - Previously: Accepted `$conversion` parameter for image transformations
+  - Now: Accepts `$collectionName` parameter to filter by media collection
+  - More useful for retrieving specific media groups (e.g., 'gallery', 'thumbnails', 'documents')
+  - Breaking change from previous implementation
+
+- **Updated Methods with Ordering**:
+  ```php
+  // Now returns media in order
+  $product->getMediaManagerMedia('gallery');
+  $product->getMediaManagerUrl('thumbnails'); // Get first from thumbnails collection
+  $product->getMediaManagerUrls('documents'); // Get all URLs from documents collection
+
+  // Order is preserved when syncing
+  $product->syncMediaManagerMedia(['uuid-3', 'uuid-1', 'uuid-2']);
+  ```
+
+### 📝 Technical Changes
+
+#### Migration Changes
+- `media_has_models` table:
+  - Added `order_column` (unsigned integer, nullable, indexed)
+  - Supports rollback with proper index cleanup
+
+#### View Refactoring
+- `resources/views/forms/media-manager-picker.blade.php`
+  - Complete rewrite with cleaner Alpine.js logic
+  - Removed complex nested x-data scopes
+  - Server-side rendering with proper ordering
+  - Simplified Sortable.js initialization
+  - Added proper instance cleanup on destroy
+  - Uses `wire:key` for DOM tracking
+  - State watcher for automatic Sortable reinitialization
+
+#### Backend Updates
+- `src/Form/MediaManagerPicker.php`
+  - `afterStateHydrated()`: Now loads and sorts media by `order_column`
+  - `saveRelationshipsUsing()`: Saves media with sequential order values
+
+- `src/Traits/InteractsWithMediaManager.php`
+  - `getMediaManagerMedia()`: Returns Eloquent Collection sorted by order
+  - `attachMediaManagerMedia()`: Assigns incremental order values
+  - `syncMediaManagerMedia()`: Rewritten to preserve array order
+  - `getFirstMediaManagerMedia()`: Updated to accept collection name filter
+  - `getMediaManagerUrl()`: Changed to accept collection name instead of conversion
+  - `getMediaManagerUrls()`: Changed to accept collection name instead of conversion
+
+- `src/Livewire/MediaPicker.php`
+  - `selectMedia()`: Fixed event detail structure with consistent wrapping
+
+### 🧪 Testing
+
+- ✅ All 97 existing tests passing
+- ✅ Order persistence tested across all trait methods
+- ✅ Drag and drop functionality verified
+- ✅ State synchronization tested
+- ✅ Collection filtering tested
+- ✅ Backward compatibility maintained
+
+### ⚠️ Breaking Changes
+
+- **InteractsWithMediaManager Trait**:
+  - `getMediaManagerUrl(?string $collectionName = null)` - Parameter changed from `$conversion` to `$collectionName`
+  - `getMediaManagerUrls(?string $collectionName = null)` - Parameter changed from `$conversion` to `$collectionName`
+  - If you were using these methods with conversion parameters, you'll need to update your code
+  - Image conversions should now be handled separately using Spatie Media Library's conversion methods
+
+### 📋 Migration Guide
+
+If upgrading from v4.0.0:
+
+1. **Run the new migration**:
+   ```bash
+   php artisan migrate
+   ```
+
+2. **Update trait method calls** if using conversions:
+   ```php
+   // Old (v4.0.0)
+   $product->getMediaManagerUrl('thumb'); // Got thumbnail conversion
+
+   // New (v4.1.0)
+   $product->getMediaManagerUrl('gallery'); // Gets first from 'gallery' collection
+
+   // For conversions, use Spatie directly:
+   $media = $product->getFirstMediaManagerMedia('gallery');
+   $thumbnailUrl = $media?->getUrl('thumb');
+   ```
+
+3. **Existing media order**: Existing media without `order_column` values will still work (nullable column). Order will be applied on next save.
+
+---
+
 ## v4.0.0 - 2025-10-07
 
 ### <� Major Release - Filament v4 Support

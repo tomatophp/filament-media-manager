@@ -6,7 +6,14 @@
 
     if ($state) {
         $uuids = is_array($state) ? $state : [$state];
-        $mediaItems = \TomatoPHP\FilamentMediaManager\Models\Media::whereIn('uuid', $uuids)->get();
+        $media = \TomatoPHP\FilamentMediaManager\Models\Media::whereIn('uuid', $uuids)->get()->keyBy('uuid');
+
+        // Order media items according to state array order
+        foreach ($uuids as $uuid) {
+            if ($media->has($uuid)) {
+                $mediaItems[] = $media->get($uuid);
+            }
+        }
     }
 @endphp
 
@@ -143,16 +150,64 @@
             border-color: rgb(255 255 255 / 0.1);
             background-color: var(--gray-950);
         }
+
+        .sortable-ghost {
+            opacity: 0.4;
+        }
     </style>
 
     <div
         x-data="{
             state: $wire.{{ $applyStateBindingModifiers("\$entangle('{$statePath}')") }},
-            pickerKey: '{{ $getId() }}'
+            pickerKey: '{{ $getId() }}',
+            isMultiple: {{ $isMultiple ? 'true' : 'false' }},
+            sortableInstance: null,
+
+            initSortable() {
+                if (!this.isMultiple) return;
+
+                // Destroy existing instance
+                if (this.sortableInstance) {
+                    this.sortableInstance.destroy();
+                    this.sortableInstance = null;
+                }
+
+                const container = this.$refs.mediaList;
+                if (!container || !window.Sortable) return;
+
+                // Only init if we have items
+                const items = container.querySelectorAll('.fi-picker-list-item');
+                if (items.length <= 1) return;
+
+                this.sortableInstance = window.Sortable.create(container, {
+                    animation: 150,
+                    handle: '.fi-picker-drag-handle',
+                    ghostClass: 'sortable-ghost',
+                    onEnd: (evt) => {
+                        // Get current state
+                        const items = Array.isArray(this.state) ? [...this.state] : [this.state];
+
+                        // Move the item
+                        const [movedItem] = items.splice(evt.oldIndex, 1);
+                        items.splice(evt.newIndex, 0, movedItem);
+
+                        // Update state - this will trigger Livewire to re-render
+                        this.state = items;
+                    }
+                });
+            },
+
+            destroySortable() {
+                if (this.sortableInstance) {
+                    this.sortableInstance.destroy();
+                    this.sortableInstance = null;
+                }
+            }
         }"
         x-init="
             let isProcessing = false;
 
+            // Listen for media selection events
             window.addEventListener('media-selected-' + pickerKey, (event) => {
                 if (isProcessing) return;
                 isProcessing = true;
@@ -161,22 +216,41 @@
                 state = newState;
 
                 $wire.set('{{ $statePath }}', newState).then(() => {
-                    // Auto-close only the media picker modal by calling unmountAction
-                    // This properly closes just the getBrowseAction modal without affecting parent modals
                     $wire.call('unmountAction', 'getBrowseAction');
 
-                    setTimeout(() => { isProcessing = false; }, 300);
+                    setTimeout(() => {
+                        isProcessing = false;
+                    }, 300);
                 });
             });
+
+            // Watch state changes and reinit sortable
+            $watch('state', () => {
+                $nextTick(() => initSortable());
+            });
+
+            // Initialize on mount
+            $nextTick(() => initSortable());
         "
+        x-on:destroy="destroySortable()"
         class="space-y-3"
     >
         {{-- Preview Section --}}
-        @if(!empty($mediaItems) && $mediaItems->count() > 0)
+        @if(!empty($mediaItems) && count($mediaItems) > 0)
             {{-- List Container --}}
-            <div class="fi-picker-list-container">
+            <div class="fi-picker-list-container" x-ref="mediaList">
                 @foreach($mediaItems as $media)
-                    <div class="fi-picker-list-item">
+                    <div class="fi-picker-list-item" data-uuid="{{ $media->uuid }}" wire:key="media-{{ $media->uuid }}">
+                        {{-- Drag Handle (only show if multiple) --}}
+                        @if($isMultiple && count($mediaItems) > 1)
+                            <div class="fi-picker-drag-handle" style="cursor: grab; padding: 0.5rem; margin-left: -0.5rem;">
+                                <x-filament::icon
+                                    icon="heroicon-o-bars-3"
+                                    class="h-5 w-5 text-gray-400 dark:text-gray-500"
+                                />
+                            </div>
+                        @endif
+
                         {{-- Preview --}}
                         <div class="fi-picker-preview-thumb">
                             @if(str_starts_with($media->mime_type, 'image/'))
@@ -254,7 +328,7 @@
         <div class="flex flex-wrap items-center gap-2" style="margin-top: 1rem;">
             {{ $getAction('getBrowseAction') }}
 
-            @if(!empty($mediaItems) && $mediaItems->count() > 0)
+            @if(!empty($mediaItems) && count($mediaItems) > 0)
                 {{ $getAction('getRemoveAction') }}
             @endif
         </div>

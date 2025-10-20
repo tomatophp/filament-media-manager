@@ -290,9 +290,11 @@ class MediaPicker extends Component implements HasActions, HasSchemas
             ->success()
             ->send();
 
-        // Dispatch window event using JavaScript to update form without closing modals
+        // Dispatch window event with consistent structure wrapped in 'media' property
         $this->js(
-            "window.dispatchEvent(new CustomEvent('media-selected-{$this->pickerKey}', { detail: " . json_encode($selectedData) . ' }));'
+            "window.dispatchEvent(new CustomEvent('media-selected-{$this->pickerKey}', {
+                detail: { media: " . json_encode($selectedData) . ' }
+            }));'
         );
 
         // Reset state but don't close the modal - user can click "Close" button
