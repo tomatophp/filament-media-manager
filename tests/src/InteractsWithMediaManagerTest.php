@@ -242,7 +242,7 @@ describe('InteractsWithMediaManager Trait', function () {
         expect($urls)->toHaveCount(0);
     });
 
-    it('can filter media by field name', function () {
+    it('can filter media by collection name', function () {
         $product = Product::create(['name' => 'Test Product']);
         $media = $product->addMedia(UploadedFile::fake()->image('test.jpg'))
             ->withCustomProperties(['field_name' => 'avatar'])
@@ -252,6 +252,8 @@ describe('InteractsWithMediaManager Trait', function () {
             'model_type' => Product::class,
             'model_id' => $product->id,
             'media_id' => $media->id,
+            'collection_name' => 'avatar',
+            'order_column' => 0,
             'created_at' => now(),
             'updated_at' => now(),
         ]);
@@ -259,7 +261,7 @@ describe('InteractsWithMediaManager Trait', function () {
         $result = $product->getMediaManagerMedia('avatar');
 
         expect($result)->toHaveCount(1);
-        expect($result->first()->getCustomProperty('field_name'))->toBe('avatar');
+        expect($result->first()->uuid)->toBe($media->uuid);
     });
 });
 
