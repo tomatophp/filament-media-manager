@@ -6,6 +6,7 @@ use Closure;
 use Filament\Actions\Action;
 use Filament\Forms\Components\Field;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\MediaLibrary\ResponsiveImages\Jobs\GenerateResponsiveImagesJob;
 use TomatoPHP\FilamentMediaManager\Models\Media;
 
 class MediaManagerPicker extends Field
@@ -113,10 +114,11 @@ class MediaManagerPicker extends Field
 
             foreach ($uuids as $uuid) {
                 $mediaItem = $media->get($uuid);
+                /**@var Media $mediaItem */
                 if ($mediaItem) {
                     // Generate responsive images if enabled
-                    if ($responsiveImages && $mediaItem->hasResponsiveImages()) {
-                        $mediaItem->registerMediaConversions();
+                    if ($responsiveImages && !$mediaItem->hasResponsiveImages()) {
+                        dispatch(new GenerateResponsiveImagesJob($mediaItem));
                     }
 
                     \DB::table('media_has_models')->insert([
