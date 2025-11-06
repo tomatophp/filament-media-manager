@@ -83,7 +83,7 @@ class EditCurrentFolderAction
                                 ->searchable()
                                 ->multiple()
                                // Replace it  ->options(config('filament-media-manager.user.model', \App\Models\User::class)::query()->where('id', '!=', auth()->user()->id)->pluck(config('filament-media-manager.user.column_name'), 'id')->toArray()), with:
-                                ->options(function () {
+                                  ->options(function () {
                                     $userModel = config('filament-media-manager.user.model', \App\Models\User::class);
                                     $columnName = config('filament-media-manager.user.column_name', 'name');
                                     $idColumn = config('filament-media-manager.user.id_column', 'id');
