@@ -114,10 +114,10 @@ class MediaManagerPicker extends Field
 
             foreach ($uuids as $uuid) {
                 $mediaItem = $media->get($uuid);
-                /**@var Media $mediaItem */
+                /** @var Media $mediaItem */
                 if ($mediaItem) {
                     // Generate responsive images if enabled
-                    if ($responsiveImages && !$mediaItem->hasResponsiveImages()) {
+                    if ($responsiveImages && ! $mediaItem->hasResponsiveImages()) {
                         dispatch(new GenerateResponsiveImagesJob($mediaItem));
                     }
 
