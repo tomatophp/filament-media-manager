@@ -82,7 +82,17 @@ class EditCurrentFolderAction
                                 ->label(trans('filament-media-manager::messages.folders.columns.users'))
                                 ->searchable()
                                 ->multiple()
-                                ->options(config('filament-media-manager.user.model', \App\Models\User::class)::query()->where('id', '!=', auth()->user()->id)->pluck(config('filament-media-manager.user.column_name'), 'id')->toArray()),
+                               // Replace it  ->options(config('filament-media-manager.user.model', \App\Models\User::class)::query()->where('id', '!=', auth()->user()->id)->pluck(config('filament-media-manager.user.column_name'), 'id')->toArray()), with:
+                                  ->options(function () {
+                                    $userModel = config('filament-media-manager.user.model', \App\Models\User::class);
+                                    $columnName = config('filament-media-manager.user.column_name', 'name');
+                                    $idColumn = config('filament-media-manager.user.id_column', 'id');
+                                    
+                                    return $userModel::query()
+                                        ->where($idColumn, '!=', auth()->id())
+                                        ->pluck($columnName, $idColumn)
+                                        ->toArray();
+                                }),
                         ]),
                 ];
             })

@@ -23,6 +23,7 @@ return [
     'user' => [
         'model' => \App\Models\User::class, // Change this to your user model
         'column_name' => 'name', // Change the value if your field in users table is different from "name"
+     'id_column' => 'id', // Add this line
     ],
 
     'navigation_sort' => 0,
