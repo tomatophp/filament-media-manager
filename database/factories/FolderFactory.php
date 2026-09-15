@@ -1,11 +1,14 @@
 <?php
 
-namespace TomatoPHP\FilamentMediaManager\Tests\Database\Factories;
+namespace TomatoPHP\FilamentMediaManager\Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 use TomatoPHP\FilamentMediaManager\Models\Folder;
 
+/**
+ * @extends Factory<Folder>
+ */
 class FolderFactory extends Factory
 {
     protected $model = Folder::class;
@@ -27,30 +30,24 @@ class FolderFactory extends Factory
 
     public function protected(string $password = 'secret123'): self
     {
-        return $this->state(function (array $attributes) use ($password) {
-            return [
-                'is_protected' => true,
-                'password' => $password,
-            ];
-        });
+        return $this->state(fn (array $attributes) => [
+            'is_protected' => true,
+            'password' => $password,
+        ]);
     }
 
     public function withPassword(string $password): self
     {
-        return $this->state(function (array $attributes) use ($password) {
-            return [
-                'password' => $password,
-            ];
-        });
+        return $this->state(fn (array $attributes) => [
+            'password' => $password,
+        ]);
     }
 
     public function public(): self
     {
-        return $this->state(function (array $attributes) {
-            return [
-                'is_protected' => false,
-                'password' => null,
-            ];
-        });
+        return $this->state(fn (array $attributes) => [
+            'is_protected' => false,
+            'password' => null,
+        ]);
     }
 }

@@ -11,6 +11,13 @@
 
 Manage your media files using spatie media library with easy to use GUI for FilamentPHP
 
+## Requirements
+
+| Package version | Filament | Laravel     | PHP  |
+|-----------------|----------|-------------|------|
+| 5.x             | 5.x      | 12.x, 13.x  | 8.2+ |
+| 4.x             | 4.x      | 11.x, 12.x  | 8.2+ |
+
 ## Installation
 
 ```bash
@@ -63,8 +70,10 @@ finally, register the plugin on `/app/Providers/Filament/AdminPanelProvider.php`
 ## Screenshots
 
 ![Folders](https://raw.githubusercontent.com/tomatophp/filament-media-manager/master/arts/folders.png)
+![Folders Dark](https://raw.githubusercontent.com/tomatophp/filament-media-manager/master/arts/folders-dark.png)
 ![Folder Password](https://raw.githubusercontent.com/tomatophp/filament-media-manager/master/arts/folder-password.png)
 ![Media](https://raw.githubusercontent.com/tomatophp/filament-media-manager/master/arts/media.png)
+![Media Dark](https://raw.githubusercontent.com/tomatophp/filament-media-manager/master/arts/media-dark.png)
 ![Add Media](https://raw.githubusercontent.com/tomatophp/filament-media-manager/master/arts/add-media.png)
 ![Add Sub Folder](https://raw.githubusercontent.com/tomatophp/filament-media-manager/master/arts/create-sub-folder.png)
 ![Preview File](https://raw.githubusercontent.com/tomatophp/filament-media-manager/master/arts/preview-file.png)

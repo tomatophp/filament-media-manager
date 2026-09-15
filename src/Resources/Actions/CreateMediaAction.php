@@ -17,7 +17,7 @@ class CreateMediaAction
             })
             ->label(trans('filament-media-manager::messages.media.actions.create.label'))
             ->icon('heroicon-o-plus')
-            ->form([
+            ->schema([
                 Forms\Components\FileUpload::make('file')
                     ->label(trans('filament-media-manager::messages.media.actions.create.form.file'))
                     ->maxSize('100000')

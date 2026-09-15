@@ -44,9 +44,9 @@ class FolderResource extends Resource
     public static function getPluralLabel(): ?string
     {
         if (request()->has('model_type') && ! request()->has('collection')) {
-            return str(request()->get('model_type'))->afterLast('\\')->title();
+            return str(request()->input('model_type'))->afterLast('\\')->title();
         } elseif (request()->has('model_type') && request()->has('collection')) {
-            return str(request()->get('collection'))->title();
+            return str(request()->input('collection'))->title();
         } else {
             $plugin = filament('filament-media-manager');
 
@@ -126,13 +126,13 @@ class FolderResource extends Resource
         return $table
             ->modifyQueryUsing(function (Builder $query) {
                 if (request()->has('model_type') && ! request()->has('collection')) {
-                    $query->where('model_type', request()->get('model_type'))
+                    $query->where('model_type', request()->input('model_type'))
                         ->where('model_id', null)
                         ->whereNotNull('collection');
                 } elseif (request()->has('model_type') && request()->has('collection')) {
-                    $query->where('model_type', request()->get('model_type'))
+                    $query->where('model_type', request()->input('model_type'))
                         ->whereNotNull('model_id')
-                        ->where('collection', request()->get('collection'));
+                        ->where('collection', request()->input('collection'));
                 } else {
                     $query->where('model_id', null)
                         ->where('collection', null)->orWhere('model_type', null);
@@ -184,7 +184,7 @@ class FolderResource extends Resource
                     ->trueLabel(trans('filament-media-manager::messages.folders.filters.protected_only'))
                     ->falseLabel(trans('filament-media-manager::messages.folders.filters.public_only')),
                 Tables\Filters\Filter::make('created_at')
-                    ->form([
+                    ->schema([
                         Forms\Components\DatePicker::make('created_from')
                             ->label(trans('filament-media-manager::messages.folders.filters.created_from')),
                         Forms\Components\DatePicker::make('created_until')

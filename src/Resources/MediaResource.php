@@ -52,7 +52,7 @@ class MediaResource extends Resource
         return $table
             ->modifyQueryUsing(function (Builder $query) {
                 if (request()->has('folder_id') && ! empty('folder_id')) {
-                    $folder = Folder::find(request()->get('folder_id'));
+                    $folder = Folder::find(request()->input('folder_id'));
                     if ($folder) {
                         $query->where('collection_name', $folder->collection);
                     }
@@ -157,7 +157,7 @@ class MediaResource extends Resource
                             ->toArray();
                     }),
                 Tables\Filters\Filter::make('size')
-                    ->form([
+                    ->schema([
                         Forms\Components\TextInput::make('size_from')
                             ->label(trans('filament-media-manager::messages.media.filters.size_from'))
                             ->numeric(),
@@ -177,7 +177,7 @@ class MediaResource extends Resource
                             );
                     }),
                 Tables\Filters\Filter::make('created_at')
-                    ->form([
+                    ->schema([
                         Forms\Components\DatePicker::make('created_from')
                             ->label(trans('filament-media-manager::messages.media.filters.created_from')),
                         Forms\Components\DatePicker::make('created_until')

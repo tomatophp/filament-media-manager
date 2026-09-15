@@ -35,7 +35,7 @@
 
 
 <button
-    wire:click="mountAction('getFolderAction', { item: {{$item}} })"
+    wire:click="mountAction('getFolderAction', { item: {{ (int) $item->id }} })"
     style="background: transparent; border: none; cursor: pointer; padding: 0;"
 >
     <style>

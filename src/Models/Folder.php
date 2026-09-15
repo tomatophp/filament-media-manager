@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
+use TomatoPHP\FilamentMediaManager\Database\Factories\FolderFactory;
 
 class Folder extends Model implements HasMedia
 {
@@ -51,7 +52,7 @@ class Folder extends Model implements HasMedia
 
     public function users()
     {
-        return $this->morphedByMany(config('filament-media-manager.user.model', \App\Models\User::class), 'model', 'folder_has_models', 'folder_id', 'model_id');
+        return $this->morphedByMany(config('filament-media-manager.user.model', 'App\Models\User'), 'model', 'folder_has_models', 'folder_id', 'model_id');
     }
 
     protected static function boot()
@@ -89,6 +90,6 @@ class Folder extends Model implements HasMedia
      */
     protected static function newFactory()
     {
-        return \TomatoPHP\FilamentMediaManager\Tests\Database\Factories\FolderFactory::new();
+        return FolderFactory::new();
     }
 }

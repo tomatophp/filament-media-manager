@@ -4,6 +4,9 @@ namespace TomatoPHP\FilamentMediaManager;
 
 use Illuminate\Support\ServiceProvider;
 use Livewire\Livewire;
+use TomatoPHP\FilamentMediaManager\Console\FilamentMediaManagerInstall;
+use TomatoPHP\FilamentMediaManager\Livewire\FolderComponent;
+use TomatoPHP\FilamentMediaManager\Livewire\MediaPicker;
 use TomatoPHP\FilamentMediaManager\Services\FilamentMediaManagerServices;
 
 class FilamentMediaManagerServiceProvider extends ServiceProvider
@@ -12,7 +15,7 @@ class FilamentMediaManagerServiceProvider extends ServiceProvider
     {
         // Register generate command
         $this->commands([
-            \TomatoPHP\FilamentMediaManager\Console\FilamentMediaManagerInstall::class,
+            FilamentMediaManagerInstall::class,
         ]);
 
         // Register Config file
@@ -55,8 +58,8 @@ class FilamentMediaManagerServiceProvider extends ServiceProvider
             return new FilamentMediaManagerServices;
         });
 
-        Livewire::component('folder-component', \TomatoPHP\FilamentMediaManager\Livewire\FolderComponent::class);
-        Livewire::component('media-picker', \TomatoPHP\FilamentMediaManager\Livewire\MediaPicker::class);
+        Livewire::component('folder-component', FolderComponent::class);
+        Livewire::component('media-picker', MediaPicker::class);
     }
 
     public function boot(): void

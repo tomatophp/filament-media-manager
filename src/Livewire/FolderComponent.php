@@ -9,6 +9,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Schemas\Concerns\InteractsWithSchemas;
 use Filament\Schemas\Contracts\HasSchemas;
+use Illuminate\Database\Eloquent\Model;
 use Livewire\Component;
 
 class FolderComponent extends Component implements HasActions, HasSchemas
@@ -27,73 +28,85 @@ class FolderComponent extends Component implements HasActions, HasSchemas
     {
         return Action::make('getFolderAction')
             ->color('danger')
-            ->view('filament-media-manager::components.folder-action-view', fn (array $arguments) => ['item' => $arguments['item']])
-            ->requiresConfirmation(function (array $arguments) {
-                if (isset($arguments['item'])) {
-                    if ($arguments['item']['is_protected']) {
-                        return true;
-                    } else {
-                        return false;
-                    }
-                }
-            })
+            ->view('filament-media-manager::components.folder-action-view', fn (array $arguments) => ['item' => $this->resolveFolder($arguments)])
+            ->requiresConfirmation(fn (array $arguments): bool => (bool) $this->resolveFolder($arguments)?->is_protected)
             ->schema(function (array $arguments) {
-                if (isset($arguments['item'])) {
-                    if ($arguments['item']['is_protected']) {
-                        return [
-                            TextInput::make('password')
-                                ->password()
-                                ->revealable()
-                                ->required()
-                                ->maxLength(255),
-                        ];
-                    } else {
-                        return null;
-                    }
+                if (! $this->resolveFolder($arguments)?->is_protected) {
+                    return null;
                 }
+
+                return [
+                    TextInput::make('password')
+                        ->password()
+                        ->revealable()
+                        ->required()
+                        ->maxLength(255),
+                ];
             })
             ->action(function (array $arguments, array $data) {
-                if (isset($arguments['item'])) {
-                    if ($arguments['item']['is_protected']) {
-                        if ($arguments['item']['password'] != $data['password']) {
-                            Notification::make()
-                                ->title('Password is incorrect')
-                                ->danger()
-                                ->send();
+                $folder = $this->resolveFolder($arguments);
 
-                            return;
-                        } else {
-                            session()->put('folder_password', $data['password']);
-                        }
+                if (! $folder) {
+                    return;
+                }
+
+                if ($folder->is_protected) {
+                    // Check against the stored password, never against a value sent by the browser.
+                    if (! hash_equals((string) $folder->password, (string) ($data['password'] ?? ''))) {
+                        Notification::make()
+                            ->title('Password is incorrect')
+                            ->danger()
+                            ->send();
+
+                        return;
                     }
-                    if (! $arguments['item']['model_type']) {
-                        if (filament()->getTenant()) {
-                            return redirect()->to(url(filament()->getCurrentPanel()->getId() . '/' . filament()->getTenant()->id . '/media?folder_id=' . $arguments['item']['id']));
-                        } else {
-                            return redirect()->route('filament.' . filament()->getCurrentPanel()->getId() . '.resources.media.index', ['folder_id' => $arguments['item']['id']]);
-                        }
-                    }
-                    if (! $arguments['item']['model_id'] && ! $arguments['item']['collection']) {
-                        if (filament()->getTenant()) {
-                            return redirect()->to(url(filament()->getCurrentPanel()->getId() . '/' . filament()->getTenant()->id . '/folders?model_type=' . $arguments['item']['model_type']));
-                        } else {
-                            return redirect()->route('filament.' . filament()->getCurrentPanel()->getId() . '.resources.folders.index', ['model_type' => $arguments['item']['model_type']]);
-                        }
-                    } elseif (! $arguments['item']['model_id']) {
-                        if (filament()->getTenant()) {
-                            return redirect()->to(url(filament()->getCurrentPanel()->getId() . '/' . filament()->getTenant()->id . '/folders?model_type=' . $arguments['item']['model_type'] . '&collection=' . $arguments['item']['collection']));
-                        } else {
-                            return redirect()->route('filament.' . filament()->getCurrentPanel()->getId() . '.resources.folders.index', ['model_type' => $arguments['item']['model_type'], 'collection' => $arguments['item']['collection']]);
-                        }
+
+                    session()->put('folder_password', $data['password']);
+                }
+
+                if (! $folder->model_type) {
+                    if (filament()->getTenant()) {
+                        return redirect()->to(url(filament()->getCurrentPanel()->getId() . '/' . filament()->getTenant()->id . '/media?folder_id=' . $folder->id));
                     } else {
-                        if (filament()->getTenant()) {
-                            return redirect()->to(url(filament()->getCurrentPanel()->getId() . '/' . filament()->getTenant()->id . '/media?folder_id=' . $arguments['item']['id']));
-                        } else {
-                            return redirect()->route('filament.' . filament()->getCurrentPanel()->getId() . '.resources.media.index', ['folder_id' => $arguments['item']['id']]);
-                        }
+                        return redirect()->route('filament.' . filament()->getCurrentPanel()->getId() . '.resources.media.index', ['folder_id' => $folder->id]);
+                    }
+                }
+                if (! $folder->model_id && ! $folder->collection) {
+                    if (filament()->getTenant()) {
+                        return redirect()->to(url(filament()->getCurrentPanel()->getId() . '/' . filament()->getTenant()->id . '/folders?model_type=' . $folder->model_type));
+                    } else {
+                        return redirect()->route('filament.' . filament()->getCurrentPanel()->getId() . '.resources.folders.index', ['model_type' => $folder->model_type]);
+                    }
+                } elseif (! $folder->model_id) {
+                    if (filament()->getTenant()) {
+                        return redirect()->to(url(filament()->getCurrentPanel()->getId() . '/' . filament()->getTenant()->id . '/folders?model_type=' . $folder->model_type . '&collection=' . $folder->collection));
+                    } else {
+                        return redirect()->route('filament.' . filament()->getCurrentPanel()->getId() . '.resources.folders.index', ['model_type' => $folder->model_type, 'collection' => $folder->collection]);
+                    }
+                } else {
+                    if (filament()->getTenant()) {
+                        return redirect()->to(url(filament()->getCurrentPanel()->getId() . '/' . filament()->getTenant()->id . '/media?folder_id=' . $folder->id));
+                    } else {
+                        return redirect()->route('filament.' . filament()->getCurrentPanel()->getId() . '.resources.media.index', ['folder_id' => $folder->id]);
                     }
                 }
             });
+    }
+
+    /**
+     * Load the folder from the database; the browser only sends its id.
+     */
+    protected function resolveFolder(array $arguments): ?Model
+    {
+        $item = $arguments['item'] ?? null;
+
+        if ($item instanceof Model) {
+            return $item;
+        }
+
+        $id = is_array($item) ? ($item['id'] ?? null) : $item;
+
+        return filled($id) ? config('filament-media-manager.model.folder')::find($id) : null;
     }
 
     public function render(): mixed

@@ -2,6 +2,25 @@
 
 All notable changes to `filament-media-manager` will be documented in this file.
 
+## v5.0.0 - 2026-09-15
+
+### Upgrade
+- Filament v5 and Laravel 12/13 support (PHP 8.2+), `tomatophp/filament-icons` ^5.0
+- Laravel 12/13 x PHP 8.3/8.4 test matrix
+
+### Fixes
+- security: protected folder passwords are no longer rendered into the folder list, and the password is checked against the stored value instead of one sent by the browser
+- `MediaManagerInput::schema()` matches the Filament v5 signature (it caused a fatal error on class load)
+- the share-with-users select keys users by the configurable `filament-media-manager.user.id_column` (#55, thanks @mtaman)
+- opening the media page without a folder redirects to the folders list instead of a 404
+- the `Folder` factory ships with the package so `Folder::factory()` works in apps
+- `FolderController` extends `Illuminate\Routing\Controller` instead of the app controller
+- deprecated `form()` and `Request::get()` calls replaced with `schema()` and `input()`
+
+### Tests
+- regression tests for the user id column and the media page redirect
+- media picker tests updated to the Filament v5 action testing API
+
 ## v4.0.3 - 2025-10-20
 
 ### 🎯 New Features

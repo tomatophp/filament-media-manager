@@ -243,8 +243,10 @@ describe('MediaManagerPicker with Password Protected Folders', function () {
         ])
             ->call('openFolder', $folder->id)
             ->assertSet('pendingFolderId', $folder->id)
-            ->callMountedAction(['password' => 'secret123'])
-            ->assertNotified(); // Should show "Access granted" notification
+            ->fillForm(['password' => 'secret123'])
+            ->callMountedAction()
+            ->assertNotified('Access granted')
+            ->assertSet('currentFolderId', $folder->id);
     });
 
     it('rejects incorrect password', function () {
@@ -258,9 +260,10 @@ describe('MediaManagerPicker with Password Protected Folders', function () {
             'isMultiple' => true,
         ])
             ->call('openFolder', $folder->id)
-            ->callMountedAction(['password' => 'wrong-password'])
+            ->fillForm(['password' => 'wrong-password'])
+            ->callMountedAction()
             ->assertSet('currentFolderId', null)
-            ->assertNotified();
+            ->assertNotified('Password is incorrect');
     });
 });
 
@@ -313,8 +316,12 @@ describe('MediaManagerPicker Upload', function () {
             'isMultiple' => true,
         ])
             ->set('currentFolderId', $folder->id)
-            ->callAction('uploadMedia', ['files' => [$file]])
-            ->assertHasNoActionErrors();
+            ->mountAction('uploadMedia')
+            ->fillForm(['files' => [$file]])
+            ->callMountedAction()
+            ->assertNotified('Media uploaded successfully');
+
+        expect($product->fresh()->getMedia('images'))->toHaveCount(1);
     });
 
     it('auto-selects uploaded media', function () {

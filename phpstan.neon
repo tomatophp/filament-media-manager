@@ -6,6 +6,7 @@ parameters:
         - src/Http/Controllers/*
         - src/Http/Resources/*
     treatPhpDocTypesAsCertain: false
+    reportUnmatchedIgnoredErrors: false
     ignoreErrors:
         - '#PHPDoc tag @method .* contains unknown class#'
         - '#Unsafe usage of new static\(\)#'

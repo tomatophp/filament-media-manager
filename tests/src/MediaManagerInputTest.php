@@ -2,9 +2,12 @@
 
 namespace TomatoPHP\FilamentMediaManager\Tests;
 
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use TomatoPHP\FilamentMediaManager\Form\MediaManagerInput;
+use TomatoPHP\FilamentMediaManager\Models\Media;
 use TomatoPHP\FilamentMediaManager\Tests\Models\Product;
 use TomatoPHP\FilamentMediaManager\Tests\Models\User;
 
@@ -37,7 +40,7 @@ describe('MediaManagerInput Component', function () {
 
     it('can set custom schema', function () {
         $field = MediaManagerInput::make('images')->schema([
-            \Filament\Forms\Components\TextInput::make('title'),
+            TextInput::make('title'),
         ]);
 
         expect($field)->toBeInstanceOf(MediaManagerInput::class);
@@ -183,7 +186,7 @@ describe('MediaManagerInput Media Deletion', function () {
         $mediaId = $media->id;
         $product->delete();
 
-        $mediaExists = \TomatoPHP\FilamentMediaManager\Models\Media::find($mediaId);
+        $mediaExists = Media::find($mediaId);
 
         expect($mediaExists)->toBeNull();
     });
@@ -193,10 +196,10 @@ describe('MediaManagerInput with Custom Schema', function () {
     it('can use custom schema for file metadata', function () {
         $field = MediaManagerInput::make('images')
             ->schema([
-                \Filament\Forms\Components\TextInput::make('title')
+                TextInput::make('title')
                     ->required()
                     ->maxLength(255),
-                \Filament\Forms\Components\Textarea::make('description')
+                Textarea::make('description')
                     ->maxLength(500),
             ]);
 

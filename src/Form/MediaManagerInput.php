@@ -6,6 +6,7 @@ use Closure;
 use Filament\Actions\Action;
 use Filament\Forms\Components\Component;
 use Filament\Forms\Components\Repeater;
+use Filament\Schemas\Schema;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
@@ -304,10 +305,18 @@ class MediaManagerInput extends Repeater
     }
 
     /**
-     * @param  array<Component> | Closure  $components
+     * @param  array<Component> | Closure | Schema  $components
      */
-    public function schema(array | Closure $components): static
+    public function schema(array | Closure | Schema $components): static
     {
+        if ($components instanceof Closure) {
+            $components = $this->evaluate($components) ?? [];
+        }
+
+        if ($components instanceof Schema) {
+            $components = $components->getComponents();
+        }
+
         $this->childComponents(array_merge([
             FileInput::make('file')
                 ->disk($this->diskName)
@@ -330,7 +339,6 @@ class MediaManagerInput extends Repeater
 
         $collection = $this->name ?? 'default';
 
-        /** @phpstan-ignore-next-line */
         $diskNameFromRegisteredConversions = $model
             ->getRegisteredMediaCollections()
             ->filter(fn (MediaCollection $mediaCollection): bool => $mediaCollection->name === $collection)

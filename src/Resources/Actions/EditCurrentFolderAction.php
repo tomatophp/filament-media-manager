@@ -14,7 +14,7 @@ class EditCurrentFolderAction
     public static function make(int $folder_id): Actions\Action
     {
         $form = config('filament-media-manager.model.folder')::query()->where('id', $folder_id)->with('users')->first()?->toArray();
-        $form['users'] = collect($form['users'])->pluck('id')->toArray();
+        $form['users'] = collect($form['users'] ?? [])->pluck(static::userIdColumn())->toArray();
 
         return Actions\Action::make('edit_current_folder')
             ->hiddenLabel()
@@ -82,17 +82,7 @@ class EditCurrentFolderAction
                                 ->label(trans('filament-media-manager::messages.folders.columns.users'))
                                 ->searchable()
                                 ->multiple()
-                               // Replace it  ->options(config('filament-media-manager.user.model', \App\Models\User::class)::query()->where('id', '!=', auth()->user()->id)->pluck(config('filament-media-manager.user.column_name'), 'id')->toArray()), with:
-                                  ->options(function () {
-                                    $userModel = config('filament-media-manager.user.model', \App\Models\User::class);
-                                    $columnName = config('filament-media-manager.user.column_name', 'name');
-                                    $idColumn = config('filament-media-manager.user.id_column', 'id');
-                                    
-                                    return $userModel::query()
-                                        ->where($idColumn, '!=', auth()->id())
-                                        ->pluck($columnName, $idColumn)
-                                        ->toArray();
-                                }),
+                                ->options(fn (): array => static::userOptions()),
                         ]),
                 ];
             })
@@ -110,5 +100,24 @@ class EditCurrentFolderAction
                     ->success()
                     ->send();
             });
+    }
+
+    /**
+     * Users the folder can be shared with, keyed by the configured user id column.
+     */
+    public static function userOptions(): array
+    {
+        $userModel = config('filament-media-manager.user.model', 'App\Models\User');
+        $idColumn = static::userIdColumn();
+
+        return $userModel::query()
+            ->where($idColumn, '!=', auth()->user()?->getAttribute($idColumn))
+            ->pluck(config('filament-media-manager.user.column_name', 'name'), $idColumn)
+            ->toArray();
+    }
+
+    protected static function userIdColumn(): string
+    {
+        return config('filament-media-manager.user.id_column', 'id');
     }
 }

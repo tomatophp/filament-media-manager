@@ -14,6 +14,8 @@ class MediaManagerType
 
     public ?array $css = null;
 
+    final public function __construct() {}
+
     public static function make(?string $exstantion = null): static
     {
         return (new static)->exstantion($exstantion);
