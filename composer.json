@@ -2,6 +2,12 @@
     "name": "tomatophp/filament-media-manager",
     "type": "library",
     "description": "Manage your media files using spatie media library with easy to use GUI for FilamentPHP",
+    "homepage": "https://tomatophp.com/en/plugins/filament-media-manager",
+    "support": {
+        "issues": "https://github.com/tomatophp/filament-media-manager/issues",
+        "source": "https://github.com/tomatophp/filament-media-manager",
+        "docs": "https://tomatophp.com/en/plugins/filament-media-manager"
+    },
     "keywords": [
         "php",
         "laravel",
