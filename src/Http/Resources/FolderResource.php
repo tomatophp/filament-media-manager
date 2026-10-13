@@ -5,6 +5,7 @@ namespace TomatoPHP\FilamentMediaManager\Http\Resources;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use TomatoPHP\FilamentMediaManager\Models\Folder;
+use TomatoPHP\FilamentMediaManager\Services\FolderAccess;
 
 class FolderResource extends JsonResource
 {
@@ -13,7 +14,7 @@ class FolderResource extends JsonResource
         $media = Media::query()
             ->where('collection_name', $this->collection);
 
-        $subFolders = Folder::query()
+        $subFolders = FolderAccess::visibleTo(auth()->user(), Folder::query())
             ->where('model_id', $this->id)
             ->where('model_type', "TomatoPHP\FilamentMediaManager\Models\Folder");
 
