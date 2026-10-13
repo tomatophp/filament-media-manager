@@ -459,6 +459,21 @@ then you can set `api.active` to `true` on the config file
 ],
 ```
 
+### API access rules
+
+The API follows the same access rules as the panel. The authenticated user (`$request->user()`) only sees:
+
+- folders that have no owner (`user_id` is empty)
+- folders owned by the user (`user_id` + `user_type`)
+- public folders (`is_public`)
+- folders shared with the user (`has_user_access` and the user is attached to the folder)
+
+Folders the user cannot see are left out of `/api/folders`, and `/api/folders/{id}` answers `404` for them. Sub folders in the response are filtered the same way.
+
+Password protected folders (`is_protected`) answer `403` on `/api/folders/{id}` unless the folder password is sent, either as the `X-Folder-Password` header (preferred) or as a `password` request parameter.
+
+**Breaking change:** clients that read private or password protected folders through the API must now be the owner (or have the folder shared with them) and must send the folder password for protected folders.
+
 ## Publish Assets
 
 you can publish config file by use this command
