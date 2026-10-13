@@ -78,11 +78,27 @@ abstract class TestCase extends BaseTestCase
     {
         $app['config']->set('filament-media-manager.user.model', User::class);
         $app['config']->set('database.default', 'testing');
+        $app['config']->set('filament-media-manager.api', [
+            'active' => true,
+            'middlewares' => ['api', 'auth'],
+            'prefix' => 'api/media-manager',
+            'resources' => [
+                'folders' => \TomatoPHP\FilamentMediaManager\Http\Resources\FoldersResource::class,
+                'folder' => \TomatoPHP\FilamentMediaManager\Http\Resources\FolderResource::class,
+                'media' => \TomatoPHP\FilamentMediaManager\Http\Resources\MediaResource::class,
+            ],
+        ]);
         $app['config']->set('filament-icons.cache', false);
 
         $app['config']->set('view.paths', [
             ...$app['config']->get('view.paths'),
             __DIR__ . '/../resources/views',
         ]);
+    }
+
+    protected function defineRoutes($router): void
+    {
+        // The provider registers the API routes before the test config is applied.
+        require __DIR__ . '/../../routes/api.php';
     }
 }
