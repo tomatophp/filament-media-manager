@@ -24,6 +24,9 @@ use RyanChandler\BladeCaptureDirective\BladeCaptureDirectiveServiceProvider;
 use Spatie\MediaLibrary\MediaLibraryServiceProvider;
 use TomatoPHP\FilamentIcons\FilamentIconsServiceProvider;
 use TomatoPHP\FilamentMediaManager\FilamentMediaManagerServiceProvider;
+use TomatoPHP\FilamentMediaManager\Http\Resources\FolderResource;
+use TomatoPHP\FilamentMediaManager\Http\Resources\FoldersResource;
+use TomatoPHP\FilamentMediaManager\Http\Resources\MediaResource;
 use TomatoPHP\FilamentMediaManager\Tests\Models\User;
 
 #[WithEnv('DB_CONNECTION', 'testing')]
@@ -83,9 +86,9 @@ abstract class TestCase extends BaseTestCase
             'middlewares' => ['api', 'auth'],
             'prefix' => 'api/media-manager',
             'resources' => [
-                'folders' => \TomatoPHP\FilamentMediaManager\Http\Resources\FoldersResource::class,
-                'folder' => \TomatoPHP\FilamentMediaManager\Http\Resources\FolderResource::class,
-                'media' => \TomatoPHP\FilamentMediaManager\Http\Resources\MediaResource::class,
+                'folders' => FoldersResource::class,
+                'folder' => FolderResource::class,
+                'media' => MediaResource::class,
             ],
         ]);
         $app['config']->set('filament-icons.cache', false);
