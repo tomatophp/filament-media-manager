@@ -6,6 +6,7 @@ use Closure;
 use Filament\Actions\Action;
 use Filament\Forms\Components\Field;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Arr;
 use Spatie\MediaLibrary\ResponsiveImages\Jobs\GenerateResponsiveImagesJob;
 use TomatoPHP\FilamentMediaManager\Models\Media;
 
@@ -187,12 +188,16 @@ class MediaManagerPicker extends Field
                     return;
                 }
 
-                $currentState = $component->getState();
-                if ($component->isMultiple() && is_array($currentState)) {
-                    $component->state(array_values(array_diff($currentState, [$uuid])));
-                } elseif (! $component->isMultiple() && $currentState === $uuid) {
-                    $component->state(null);
-                }
+                // The state can be a single UUID string or a list of UUIDs, whatever the picker mode is
+                // (e.g. a single picker filled with a one item array), so normalise it before removing.
+                $remaining = array_values(array_filter(
+                    Arr::wrap($component->getState()),
+                    fn ($item): bool => filled($item) && $item !== $uuid,
+                ));
+
+                $component->state(
+                    $component->isMultiple() ? $remaining : ($remaining[0] ?? null)
+                );
             });
     }
 
