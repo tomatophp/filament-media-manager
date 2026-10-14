@@ -2,6 +2,11 @@
 
 All notable changes to `filament-media-manager` will be documented in this file.
 
+## v5.0.3 - 2026-10-14
+
+### Fixes
+- `MediaManagerPicker`: the per-item Remove button now works when the picker state is a one-item list in single mode (or a lone UUID string in multiple mode) (#64)
+
 ## v5.0.0 - 2026-09-15
 
 ### Upgrade
