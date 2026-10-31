@@ -77,7 +77,7 @@ it('adds several files at once, without a title or description', function () {
     $media = $this->folder->getMedia('images');
 
     expect($media->pluck('file_name')->sort()->values()->all())->toBe(['one.jpg', 'three.pdf', 'two.jpg'])
-        ->and($media->map(fn ($item) => $item->getCustomProperty('title'))->filter()->all())->toBe([]);
+        ->and($media->every(fn ($item) => ! $item->hasCustomProperty('title') && ! $item->hasCustomProperty('description')))->toBeTrue();
 });
 
 it('offers a title and a description only for a single file', function () {

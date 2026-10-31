@@ -47,10 +47,13 @@ class CreateMediaAction
                 $folder = Folder::find($folder_id);
                 if ($folder) {
                     $files = array_values(Arr::wrap($data['file']));
-                    $customProperties = [
-                        'title' => count($files) === 1 ? ($data['title'] ?? null) : null,
-                        'description' => count($files) === 1 ? ($data['description'] ?? null) : null,
-                    ];
+                    // Title and description describe one medium; with several files the fields are hidden
+                    $customProperties = count($files) === 1
+                        ? [
+                            'title' => $data['title'] ?? null,
+                            'description' => $data['description'] ?? null,
+                        ]
+                        : [];
 
                     foreach ($files as $file) {
                         ($folder->model ?? $folder)
