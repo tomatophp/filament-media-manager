@@ -155,6 +155,7 @@ class Model extends Authenticatable {
 - **Live Preview**: See selected items with preview thumbnails, file info, and remove buttons
 - **Dark Mode Support**: Fully styled for both light and dark themes
 - **Auto-close Modal**: Modal automatically closes after selection with success notification
+- **Edit Folders**: Rename or change the open folder with the same form as on the folder page
 
 ### Multiple Pickers with Collections
 

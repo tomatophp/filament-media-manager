@@ -14,6 +14,7 @@ use Livewire\Attributes\On;
 use Livewire\Component;
 use TomatoPHP\FilamentMediaManager\Models\Folder;
 use TomatoPHP\FilamentMediaManager\Models\Media;
+use TomatoPHP\FilamentMediaManager\Resources\Actions\EditCurrentFolderAction;
 
 class MediaPicker extends Component implements HasActions, HasSchemas
 {
@@ -194,6 +195,38 @@ class MediaPicker extends Component implements HasActions, HasSchemas
                     }
                 }
             });
+    }
+
+    /**
+     * Rename or change the open folder, with the form of the folder page
+     */
+    public function editFolder(): Action
+    {
+        return EditCurrentFolderAction::make((int) $this->currentFolderId)
+            ->name('editFolder')
+            ->visible(fn (): bool => $this->canEditFolder())
+            ->after(function (): void {
+                // Livewire keeps computed properties for the request, the header would still show the old name
+                unset($this->currentFolder);
+            });
+    }
+
+    protected function canEditFolder(): bool
+    {
+        $folder = $this->currentFolder;
+
+        if (! $folder || ! filament()->getCurrentOrDefaultPanel()?->hasPlugin('filament-media-manager')) {
+            return false;
+        }
+
+        // Like the folder page: with user access, a folder of a user can only be changed by that user
+        if (filament('filament-media-manager')->allowUserAccess && filled($folder->user_id)) {
+            $user = auth()->user();
+
+            return $user && $folder->user_id === $user->getAuthIdentifier() && $folder->user_type === get_class($user);
+        }
+
+        return true;
     }
 
     public function goBack(): void
