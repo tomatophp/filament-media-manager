@@ -17,6 +17,7 @@ use TomatoPHP\FilamentMediaManager\Resources\Actions\DeleteFolderAction;
 use TomatoPHP\FilamentMediaManager\Resources\Actions\EditCurrentFolderAction;
 use TomatoPHP\FilamentMediaManager\Resources\FolderResource;
 use TomatoPHP\FilamentMediaManager\Resources\MediaResource;
+use TomatoPHP\FilamentMediaManager\Services\FolderBreadcrumbs;
 
 class ListMedia extends ManageRecords
 {
@@ -34,6 +35,20 @@ class ListMedia extends ManageRecords
     public function getSubheading(): string | Htmlable
     {
         return $this->folder->description ?? '';
+    }
+
+    /**
+     * @return array<string>
+     */
+    public function getBreadcrumbs(): array
+    {
+        $breadcrumbs = FolderBreadcrumbs::forFolder($this->folder);
+
+        // The current folder is the page itself, so it is not a link
+        $current = array_pop($breadcrumbs);
+        $breadcrumbs[] = $current;
+
+        return $breadcrumbs;
     }
 
     public function mount(): void
