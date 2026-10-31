@@ -152,6 +152,7 @@ class Model extends Authenticatable {
 - **Responsive Images**: Use `->responsiveImages()` to automatically generate responsive images with Spatie
 - **Drag & Drop Reordering**: Visually reorder selected media items with drag handles
 - **Password Protected Folders**: Browse secure folders with password verification
+- **New Folders**: Create a folder right in the picker, at the top level or, with `->allowSubFolders()`, inside the open folder, and upload into it straight away
 - **Live Preview**: See selected items with preview thumbnails, file info, and remove buttons
 - **Dark Mode Support**: Fully styled for both light and dark themes
 - **Auto-close Modal**: Modal automatically closes after selection with success notification

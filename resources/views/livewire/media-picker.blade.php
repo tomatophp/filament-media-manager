@@ -36,6 +36,8 @@
 
             {{-- Right: Action Buttons --}}
             <div class="fi-section-header-actions">
+                {{ ($this->createFolder) }}
+
                 @if($currentFolder)
                     <x-filament::button
                         color="gray"

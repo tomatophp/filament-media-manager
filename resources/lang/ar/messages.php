@@ -93,5 +93,7 @@ return [
         'clear_all' => 'مسح الكل',
         'confirm_remove' => 'إزالة الوسائط',
         'confirm_remove_message' => 'هل أنت متأكد من إزالة هذا العنصر؟',
+        'create_folder' => 'مجلد جديد',
+        'folder_created' => 'تم إنشاء المجلد',
     ],
 ];
