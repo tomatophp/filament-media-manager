@@ -45,7 +45,7 @@ it('adds the uploaded file to the folder', function () {
         ->test(ListMedia::class)
         ->mountAction('create_media')
         ->setActionData([
-            'file' => UploadedFile::fake()->image('photo.jpg'),
+            'file' => [UploadedFile::fake()->image('photo.jpg')],
             'title' => 'Photo',
             'description' => 'A photo',
         ])
@@ -57,4 +57,40 @@ it('adds the uploaded file to the folder', function () {
     expect($media)->toHaveCount(1)
         ->and($media->first()->file_name)->toBe('photo.jpg')
         ->and($media->first()->getCustomProperty('title'))->toBe('Photo');
+});
+
+it('adds several files at once, without a title or description', function () {
+    Livewire::withQueryParams(['folder_id' => $this->folder->id])
+        ->test(ListMedia::class)
+        ->mountAction('create_media')
+        ->setActionData([
+            'file' => [
+                UploadedFile::fake()->image('one.jpg'),
+                UploadedFile::fake()->image('two.jpg'),
+                UploadedFile::fake()->create('three.pdf', 10, 'application/pdf'),
+            ],
+            'title' => 'Ignored',
+        ])
+        ->callMountedAction()
+        ->assertHasNoActionErrors();
+
+    $media = $this->folder->getMedia('images');
+
+    expect($media->pluck('file_name')->sort()->values()->all())->toBe(['one.jpg', 'three.pdf', 'two.jpg'])
+        ->and($media->map(fn ($item) => $item->getCustomProperty('title'))->filter()->all())->toBe([]);
+});
+
+it('offers a title and a description only for a single file', function () {
+    $component = Livewire::withQueryParams(['folder_id' => $this->folder->id])
+        ->test(ListMedia::class)
+        ->mountAction('create_media')
+        ->assertFormFieldVisible('title')
+        ->assertFormFieldVisible('description');
+
+    $component
+        ->setActionData(['file' => [UploadedFile::fake()->image('one.jpg')]])
+        ->assertFormFieldVisible('title')
+        ->setActionData(['file' => [UploadedFile::fake()->image('one.jpg'), UploadedFile::fake()->image('two.jpg')]])
+        ->assertFormFieldHidden('title')
+        ->assertFormFieldHidden('description');
 });
