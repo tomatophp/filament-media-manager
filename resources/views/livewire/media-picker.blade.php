@@ -46,6 +46,8 @@
                         {{ trans('filament-media-manager::messages.picker.back') }}
                     </x-filament::button>
 
+                    {{ ($this->editFolder) }}
+
                     {{ ($this->uploadMedia) }}
                 @endif
             </div>
