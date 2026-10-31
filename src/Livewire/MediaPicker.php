@@ -10,10 +10,12 @@ use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Schemas\Concerns\InteractsWithSchemas;
 use Filament\Schemas\Contracts\HasSchemas;
+use Illuminate\Support\Arr;
 use Livewire\Attributes\On;
 use Livewire\Component;
 use TomatoPHP\FilamentMediaManager\Models\Folder;
 use TomatoPHP\FilamentMediaManager\Models\Media;
+use TomatoPHP\FilamentMediaManager\Resources\Schemas\FolderForm;
 
 class MediaPicker extends Component implements HasActions, HasSchemas
 {
@@ -194,6 +196,67 @@ class MediaPicker extends Component implements HasActions, HasSchemas
                     }
                 }
             });
+    }
+
+    /**
+     * A folder at the top level, or a sub folder of the open folder, so that media can be uploaded right where it
+     * belongs without leaving the picker
+     */
+    public function createFolder(): Action
+    {
+        return Action::make('createFolder')
+            ->label(trans('filament-media-manager::messages.picker.create_folder'))
+            ->icon('heroicon-o-folder-plus')
+            ->color('gray')
+            ->visible(fn (): bool => $this->canCreateFolder())
+            ->schema(FolderForm::components())
+            ->action(function (array $data): void {
+                $parent = $this->currentFolder;
+
+                $folder = Folder::query()->create([
+                    ...Arr::except($data, ['password_confirmation']),
+                    'user_id' => auth()->id(),
+                    'user_type' => auth()->user() ? get_class(auth()->user()) : null,
+                    'model_type' => $parent ? Folder::class : null,
+                    'model_id' => $parent?->id,
+                ]);
+
+                Notification::make()
+                    ->title(trans('filament-media-manager::messages.picker.folder_created'))
+                    ->success()
+                    ->send();
+
+                // Open it to upload right away; a protected folder asks for its password like any other
+                if (! $folder->is_protected) {
+                    $this->currentFolderId = $folder->id;
+
+                    // Livewire keeps computed properties for the request, the header would still show the parent
+                    unset($this->currentFolder);
+                }
+            });
+    }
+
+    protected function canCreateFolder(): bool
+    {
+        // Collections are unique, so a picker limited to one would never show another folder
+        if ($this->collectionName) {
+            return false;
+        }
+
+        $folder = $this->currentFolder;
+
+        if (! $folder) {
+            return true;
+        }
+
+        // Folders of a model type, a collection or a record are managed by their model, not by hand
+        if (! in_array($folder->model_type, [null, Folder::class], true)) {
+            return false;
+        }
+
+        $panel = filament()->getCurrentOrDefaultPanel();
+
+        return $panel?->hasPlugin('filament-media-manager') && filament('filament-media-manager')->allowSubFolders;
     }
 
     public function goBack(): void

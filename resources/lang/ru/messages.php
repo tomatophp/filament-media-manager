@@ -16,6 +16,7 @@ return [
             'users' => 'Пользователи',
             'icon' => 'Иконка',
             'color' => 'Цвет',
+            'custom_color' => 'Свой цвет',
             'is_protected' => 'Защищено',
             'password' => 'Пароль',
             'password_confirmation' => 'Подтверждение пароля',

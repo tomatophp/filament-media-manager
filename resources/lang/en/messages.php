@@ -16,6 +16,7 @@ return [
             'users' => 'Users',
             'icon' => 'Icon',
             'color' => 'Color',
+            'custom_color' => 'Custom color',
             'is_protected' => 'Is Protected',
             'password' => 'Password',
             'password_confirmation' => 'Password Confirmation',
@@ -97,5 +98,7 @@ return [
         'clear_all' => 'Clear all',
         'confirm_remove' => 'Remove Media',
         'confirm_remove_message' => 'Are you sure you want to remove this media item?',
+        'create_folder' => 'New Folder',
+        'folder_created' => 'Folder created',
     ],
 ];

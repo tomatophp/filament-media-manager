@@ -44,6 +44,8 @@ finally, register the plugin on `/app/Providers/Filament/AdminPanelProvider.php`
 ->plugin(
     \TomatoPHP\FilamentMediaManager\FilamentMediaManagerPlugin::make()
         ->allowSubFolders()
+        ->defaultFolderColor('#f3c623') // color of new folders and of folders without one
+        ->folderColors(['#f3c623', '#3b82f6', '#22c55e', '#ef4444']) // offered as swatches in the folder form
         ->navigationGroup()
         ->navigationIcon()
         ->navigationLabel()
@@ -54,6 +56,7 @@ finally, register the plugin on `/app/Providers/Filament/AdminPanelProvider.php`
 
 - 📁 Manage your media files using spatie media library
 - 📂 Create folders and subfolders
+- 🎨 Default folder color and a color palette for the folder form
 - 🔒 Set password for folders with secure access
 - 📝 Upload Files with Custom Fields using `->schema()`
 - 🤖 Auto Create Folders for Model/Collection/Record
@@ -152,6 +155,7 @@ class Model extends Authenticatable {
 - **Responsive Images**: Use `->responsiveImages()` to automatically generate responsive images with Spatie
 - **Drag & Drop Reordering**: Visually reorder selected media items with drag handles
 - **Password Protected Folders**: Browse secure folders with password verification
+- **New Folders**: Create a folder right in the picker, at the top level or, with `->allowSubFolders()`, inside the open folder, and upload into it straight away
 - **Live Preview**: See selected items with preview thumbnails, file info, and remove buttons
 - **Dark Mode Support**: Fully styled for both light and dark themes
 - **Auto-close Modal**: Modal automatically closes after selection with success notification

@@ -8,6 +8,7 @@ use Filament\Notifications\Notification;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Utilities\Get;
 use TomatoPHP\FilamentIcons\Components\IconPicker;
+use TomatoPHP\FilamentMediaManager\Resources\Schemas\FolderForm;
 
 class EditCurrentFolderAction
 {
@@ -43,8 +44,7 @@ class EditCurrentFolderAction
                                 ->maxLength(255),
                             IconPicker::make('icon')
                                 ->label(trans('filament-media-manager::messages.folders.columns.icon')),
-                            Forms\Components\ColorPicker::make('color')
-                                ->label(trans('filament-media-manager::messages.folders.columns.color')),
+                            ...FolderForm::colorComponents(),
                             Forms\Components\Toggle::make('is_protected')
                                 ->label(trans('filament-media-manager::messages.folders.columns.is_protected'))
                                 ->live()
