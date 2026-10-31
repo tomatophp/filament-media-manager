@@ -87,6 +87,7 @@ return [
         'select' => 'Select',
         'cancel' => 'Cancel',
         'back' => 'Back',
+        'breadcrumbs' => 'Folder path',
         'search' => 'Search folders and files...',
         'select_folder' => 'Select a folder to browse media files',
         'folders' => 'Folders',

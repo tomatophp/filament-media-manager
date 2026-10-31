@@ -3,6 +3,7 @@
 namespace TomatoPHP\FilamentMediaManager\Tests;
 
 use Livewire\Livewire;
+use TomatoPHP\FilamentMediaManager\Livewire\MediaPicker;
 use TomatoPHP\FilamentMediaManager\Models\Folder;
 use TomatoPHP\FilamentMediaManager\Resources\FolderResource;
 use TomatoPHP\FilamentMediaManager\Resources\MediaResource;
@@ -116,4 +117,42 @@ it('shows the trail on the media page', function () {
     get(MediaResource::getUrl('index', ['folder_id' => $events->id]))
         ->assertSuccessful()
         ->assertSee(MediaResource::getUrl('index', ['folder_id' => $photos->id]), escape: false);
+});
+
+it('shows the parent folders in the media picker and opens them', function () {
+    $top = Folder::factory()->create(['name' => 'Photos']);
+    $events = subFolder($top, 'Events');
+    $summer = subFolder($events, 'Summer');
+
+    Livewire::test(MediaPicker::class, ['pickerKey' => 'picker'])
+        ->set('currentFolderId', $summer->id)
+        ->assertSet('breadcrumbs', [
+            ['id' => $top->id, 'label' => 'Photos'],
+            ['id' => $events->id, 'label' => 'Events'],
+            ['id' => $summer->id, 'label' => 'Summer'],
+        ])
+        ->assertSeeInOrder([FolderResource::getNavigationLabel(), 'Photos', 'Events', 'Summer'])
+        ->assertSeeHtml('wire:click="openFolder(' . $top->id . ')"')
+        ->assertSeeHtml('wire:click="openFolder(' . $events->id . ')"')
+        ->assertDontSeeHtml('wire:click="openFolder(' . $summer->id . ')"')
+        ->call('openFolder', $top->id)
+        ->assertSet('currentFolderId', $top->id)
+        ->assertSet('breadcrumbs', [['id' => $top->id, 'label' => 'Photos']])
+        ->set('currentFolderId', null)
+        ->assertSet('breadcrumbs', []);
+});
+
+it('shows the model type and collection levels in the media picker, openable only with a folder', function () {
+    $type = Folder::factory()->create(['name' => 'Users', 'model_type' => User::class, 'model_id' => null, 'collection' => null]);
+    $record = Folder::factory()->create(['name' => 'Jane', 'model_type' => User::class, 'model_id' => 1, 'collection' => 'avatars']);
+
+    Livewire::test(MediaPicker::class, ['pickerKey' => 'picker'])
+        ->set('currentFolderId', $record->id)
+        ->assertSet('breadcrumbs', [
+            ['id' => $type->id, 'label' => 'Users'],
+            ['id' => null, 'label' => 'Avatars'],
+            ['id' => $record->id, 'label' => 'Jane'],
+        ])
+        ->assertSeeHtml('wire:click="openFolder(' . $type->id . ')"')
+        ->assertSeeHtml('<span class="media-picker-breadcrumb-text" title="Avatars">Avatars</span>');
 });
