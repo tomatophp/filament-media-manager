@@ -5,6 +5,7 @@ namespace TomatoPHP\FilamentMediaManager\Resources\Actions;
 use Filament\Actions;
 use Filament\Forms;
 use Filament\Notifications\Notification;
+use Filament\Schemas\Schema;
 use TomatoPHP\FilamentMediaManager\Models\Folder;
 
 class CreateMediaAction
@@ -12,7 +13,11 @@ class CreateMediaAction
     public static function make(int $folder_id): Actions\Action
     {
         return Actions\Action::make('create_media')
-            ->mountUsing(function () use ($folder_id) {
+            ->mountUsing(function (?Schema $schema) use ($folder_id) {
+                // Replaces Filament's default mount callback, so the form has to be filled here: without it,
+                // `mountedActions.0.data.file` does not exist and the file upload fails to entangle
+                $schema?->fill();
+
                 session()->put('folder_id', $folder_id);
             })
             ->label(trans('filament-media-manager::messages.media.actions.create.label'))
