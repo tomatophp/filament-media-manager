@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use TomatoPHP\FilamentMediaManager\Database\Factories\FolderFactory;
+use TomatoPHP\FilamentMediaManager\FilamentMediaManagerPlugin;
 
 class Folder extends Model implements HasMedia
 {
@@ -39,6 +40,14 @@ class Folder extends Model implements HasMedia
         'is_public' => 'boolean',
         'has_user_access' => 'boolean',
     ];
+
+    /**
+     * The folder's color, or the default for folders without one
+     */
+    public function getDisplayColor(): string
+    {
+        return filled($this->color) ? $this->color : FilamentMediaManagerPlugin::resolveDefaultFolderColor();
+    }
 
     public function model()
     {

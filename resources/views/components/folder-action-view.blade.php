@@ -61,7 +61,7 @@
         .folder-icon-{{$item->id}} {
             width: 100px;
             height: 70px;
-            background-color: {{$item->color?? '#f3c623'}};
+            background-color: {{ $item->getDisplayColor() }};
             border-radius: 5px;
             position: relative;
             margin: 10px;
@@ -76,7 +76,7 @@
             content: "";
             width: 40px;
             height: 10px;
-            background-color: {{$item->color?? '#f3c623'}};
+            background-color: {{ $item->getDisplayColor() }};
             border-radius: 5px 5px 0 0;
             position: absolute;
             top: -10px;

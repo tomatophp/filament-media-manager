@@ -16,6 +16,7 @@ return [
             'users' => 'Kullanıcılar',
             'icon' => 'Simge',
             'color' => 'Renk',
+            'custom_color' => 'Özel renk',
             'is_protected' => 'Korumalı mı',
             'password' => 'Parola',
             'password_confirmation' => 'Parola Onayı',

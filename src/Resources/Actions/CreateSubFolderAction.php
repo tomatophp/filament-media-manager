@@ -4,6 +4,7 @@ namespace TomatoPHP\FilamentMediaManager\Resources\Actions;
 
 use Filament\Actions;
 use Filament\Notifications\Notification;
+use TomatoPHP\FilamentMediaManager\FilamentMediaManagerPlugin;
 use TomatoPHP\FilamentMediaManager\Models\Folder;
 use TomatoPHP\FilamentMediaManager\Resources\Schemas\FolderForm;
 
@@ -26,7 +27,7 @@ class CreateSubFolderAction
                 'collection' => '',
                 'description' => '',
                 'icon' => '',
-                'color' => '',
+                'color' => FilamentMediaManagerPlugin::resolveDefaultFolderColor(),
                 'is_protected' => false,
                 'password' => '',
                 'password_confirmation' => '',

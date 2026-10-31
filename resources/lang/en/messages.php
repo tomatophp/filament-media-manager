@@ -16,6 +16,7 @@ return [
             'users' => 'Users',
             'icon' => 'Icon',
             'color' => 'Color',
+            'custom_color' => 'Custom color',
             'is_protected' => 'Is Protected',
             'password' => 'Password',
             'password_confirmation' => 'Password Confirmation',

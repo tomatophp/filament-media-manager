@@ -13,6 +13,7 @@ return [
             'description' => 'الوصف',
             'icon' => 'الايقونة',
             'color' => 'اللون',
+            'custom_color' => 'لون مخصص',
             'is_protected' => 'محمي بكلمة مرور',
             'password' => 'كلمة المرور',
             'password_confirmation' => 'تأكيد كلمة المرور',
