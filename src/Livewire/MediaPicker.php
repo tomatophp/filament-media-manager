@@ -202,8 +202,12 @@ class MediaPicker extends Component implements HasActions, HasSchemas
             $currentFolder = Folder::find($this->currentFolderId);
 
             if ($currentFolder) {
+                // A sub folder points to its parent through model_id; it has a collection too, so check it first
+                if ($currentFolder->model_type === Folder::class) {
+                    $this->currentFolderId = $currentFolder->model_id;
+                }
                 // If in an instance folder, go back to collection folder
-                if ($currentFolder->model_type && $currentFolder->model_id && $currentFolder->collection) {
+                elseif ($currentFolder->model_type && $currentFolder->model_id && $currentFolder->collection) {
                     // Find the collection folder
                     $collectionFolder = Folder::where('model_type', $currentFolder->model_type)
                         ->whereNull('model_id')
