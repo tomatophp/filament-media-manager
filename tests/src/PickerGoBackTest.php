@@ -58,3 +58,18 @@ it('still goes back from a record folder to its collection and model type folder
         ->call('goBack')
         ->assertSet('currentFolderId', $typeFolder->id);
 });
+
+it('asks for the password when going back into a protected parent', function () {
+    $parent = Folder::factory()->protected('top-secret-123')->create(['collection' => 'private']);
+    $child = pickerSubFolder($parent, 'public');
+
+    Livewire::test(MediaPicker::class, ['pickerKey' => 'picker'])
+        ->set('currentFolderId', $child->id)
+        ->call('goBack')
+        ->assertSet('currentFolderId', $child->id)
+        ->assertSet('pendingFolderId', $parent->id)
+        ->assertActionMounted('verifyPassword')
+        ->setActionData(['password' => 'top-secret-123'])
+        ->callMountedAction()
+        ->assertSet('currentFolderId', $parent->id);
+});
