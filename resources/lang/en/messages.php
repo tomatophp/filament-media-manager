@@ -97,5 +97,7 @@ return [
         'clear_all' => 'Clear all',
         'confirm_remove' => 'Remove Media',
         'confirm_remove_message' => 'Are you sure you want to remove this media item?',
+        'create_folder' => 'New Folder',
+        'folder_created' => 'Folder created',
     ],
 ];
