@@ -21,12 +21,33 @@
     {{-- Navigation Bar --}}
     <div class="fi-section-header">
         <div class="fi-section-header-wrapper">
-            {{-- Left: Folder Name --}}
+            {{-- Left: Folder Name, with the folders above it --}}
             <div class="fi-section-header-heading">
                 @if($currentFolder)
-                    <h3 class="fi-section-header-title">
-                        {{ $currentFolder->name }}
-                    </h3>
+                    {{-- Wraps like the page breadcrumbs; only a name wider than the whole line is cut, in full in its title --}}
+                    <nav class="media-picker-breadcrumbs" aria-label="{{ trans('filament-media-manager::messages.picker.breadcrumbs') }}">
+                        <span class="media-picker-breadcrumb">
+                            <button type="button" class="media-picker-breadcrumb-link" wire:click="$set('currentFolderId', null)">
+                                {{ \TomatoPHP\FilamentMediaManager\Resources\FolderResource::getNavigationLabel() }}
+                            </button>
+                        </span>
+
+                        @foreach($this->breadcrumbs as $breadcrumb)
+                            <span class="media-picker-breadcrumb">
+                                <x-filament::icon icon="heroicon-m-chevron-right" class="media-picker-breadcrumb-separator" />
+
+                                @if($loop->last)
+                                    <h3 class="fi-section-header-title" title="{{ $breadcrumb['label'] }}" aria-current="page">{{ $breadcrumb['label'] }}</h3>
+                                @elseif($breadcrumb['id'])
+                                    <button type="button" class="media-picker-breadcrumb-link" title="{{ $breadcrumb['label'] }}" wire:click="openFolder({{ $breadcrumb['id'] }})">
+                                        {{ $breadcrumb['label'] }}
+                                    </button>
+                                @else
+                                    <span class="media-picker-breadcrumb-text" title="{{ $breadcrumb['label'] }}">{{ $breadcrumb['label'] }}</span>
+                                @endif
+                            </span>
+                        @endforeach
+                    </nav>
                 @else
                     <h3 class="fi-section-header-title">
                         {{ trans('filament-media-manager::messages.picker.title') }}
@@ -68,14 +89,18 @@
 
         .fi-section-header-wrapper {
             display: flex;
+            flex-wrap: wrap;
             align-items: center;
             justify-content: space-between;
-            gap: 1rem;
+            gap: 0.5rem 1rem;
         }
 
         .fi-section-header-heading {
             min-width: 0;
-            flex: 1;
+            /* Below 16rem next to the buttons, the buttons move to the next line */
+            flex: 1 1 16rem;
+            /* Long folder names must not widen the modal, they wrap or get cut instead */
+            contain: inline-size;
         }
 
         .fi-section-header-title {
@@ -91,11 +116,69 @@
             color: white;
         }
 
+        .media-picker-breadcrumbs {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            column-gap: 0.25rem;
+            row-gap: 0.125rem;
+            min-width: 0;
+        }
+
+        .media-picker-breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            min-width: 0;
+            max-width: 100%;
+        }
+
+        .media-picker-breadcrumb-link,
+        .media-picker-breadcrumb-text {
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: rgb(107 114 128);
+        }
+
+        .media-picker-breadcrumb-link:hover {
+            color: rgb(55 65 81);
+        }
+
+        .dark .media-picker-breadcrumb-link,
+        .dark .media-picker-breadcrumb-text {
+            color: rgb(156 163 175);
+        }
+
+        .dark .media-picker-breadcrumb-link:hover {
+            color: rgb(229 231 235);
+        }
+
+        .media-picker-breadcrumb-separator {
+            width: 1rem;
+            height: 1rem;
+            flex-shrink: 0;
+            color: rgb(156 163 175);
+        }
+
+        [dir="rtl"] .media-picker-breadcrumb-separator {
+            transform: scaleX(-1);
+        }
+
+        .media-picker-breadcrumbs .fi-section-header-title {
+            min-width: 0;
+        }
+
         .fi-section-header-actions {
             display: flex;
             flex-shrink: 0;
+            flex-wrap: wrap;
             align-items: center;
             gap: 0.5rem;
+            margin-inline-start: auto;
         }
 
         /* Grid Layout */

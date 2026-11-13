@@ -14,6 +14,7 @@ use Livewire\Attributes\On;
 use Livewire\Component;
 use TomatoPHP\FilamentMediaManager\Models\Folder;
 use TomatoPHP\FilamentMediaManager\Models\Media;
+use TomatoPHP\FilamentMediaManager\Services\FolderBreadcrumbs;
 
 class MediaPicker extends Component implements HasActions, HasSchemas
 {
@@ -421,6 +422,14 @@ class MediaPicker extends Component implements HasActions, HasSchemas
     public function getCurrentFolderProperty(): ?Folder
     {
         return $this->currentFolderId ? Folder::find($this->currentFolderId) : null;
+    }
+
+    /**
+     * @return list<array{id: ?int, label: string}>
+     */
+    public function getBreadcrumbsProperty(): array
+    {
+        return $this->currentFolder ? FolderBreadcrumbs::forPicker($this->currentFolder) : [];
     }
 
     public function render()
